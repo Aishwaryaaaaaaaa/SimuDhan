@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz — Simudhan</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location='index.html'">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+    </div>
+    <span class="nav-name">Simudhan</span>
+  </div>
+  <div class="nav-links">
+     <span onclick="window.location='index.html'">Home</span>
+     <a href="quiz.html" class="active">Quiz</a>
+     <span onclick="window.location='faq.html'">FAQs</span>
+      <span onclick="window.location='trade.html'">App</span>
+      <span onclick="window.location='contact.html'">Reach Out</span>
+    </div>
+  <a href="index.html#waitlist" class="nav-cta">Join waitlist</a>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow"><div class="eyebrow-line"></div><span>Sample quiz</span></div>
+  <h1>How much do you<br><span class="dim">actually know?</span></h1>
+  <p class="page-sub">6 questions. Market knowledge, ethics, and real-world scenarios. No prior knowledge needed.</p>
+</div>
+
+<div class="quiz-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="fill" style="width:0%"></div></div>
+  <div class="quiz-meta">
+    <span class="q-counter" id="counter">Question 1 of 6</span>
+    <span class="q-type" id="qtype">Knowledge</span>
+    <span class="q-score" id="qscore">Score: 0</span>
+  </div>
+  <div id="qzone"></div>
+  <div class="result" id="result">
+    <div class="result-score" id="rscore"></div>
+    <div class="result-label" id="rlabel"></div>
+    <div class="result-grid">
+      <div class="rg"><div class="rg-v" id="rc">0</div><div class="rg-l">Correct</div></div>
+      <div class="rg"><div class="rg-v" id="rw">0</div><div class="rg-l">Wrong</div></div>
+      <div class="rg"><div class="rg-v" id="rp">0%</div><div class="rg-l">Score</div></div>
+    </div>
+    <button class="btn-retry" onclick="init()">Try again</button>
+  </div>
+</div>
+
+<footer>
+  <span>Built by <strong>Aishwarya Jha</strong></span>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="FAQ.html">FAQ</a>
+    <a href="trade.html">App</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <span>simudhan.trade · 2026</span>
+</footer>
+
+<script src="quiz.js"></script>
+</body>
+</html>

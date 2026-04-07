@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — Simudhan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="faq.css">
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo" onclick="window.location='index.html'">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      </div>
+      <span class="nav-name">Simudhan</span>
+    </div>
+    <div class="nav-links">
+      <span onclick="window.location='index.html'">Home</span>
+      <span onclick="window.location='quiz.html'">Quiz</span>
+      <span class="active">FAQs</span>
+      <span onclick="window.location='trade.html'">App</span>
+      <span onclick="window.location='contact.html'">Reach Out</span>
+    </div>
+    <button class="nav-cta" onclick="window.location='index.html'">Join waitlist</button>
+  </nav>
+
+  <main>
+    <div class="eyebrow">
+      <div class="eyebrow-line"></div>
+      <span>Got questions</span>
+    </div>
+    <h1>Everything you<br><span class="light">need to know.</span></h1>
+    <p class="subline">Can't find what you're looking for? Ask Zara when we launch — she's pretty good at explaining things.</p>
+  </main>
+
+  <div class="faq-wrap">
+
+    <div class="faq-section">
+      <div class="faq-section-title">Pricing & access</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Is Simudhan free?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Yes — completely free for students, always. We believe financial education should be accessible to every teenager in India, not just those who can afford a subscription. We may introduce premium features for schools and teachers later, but the core student experience will never be paywalled.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Do I need a Demat account?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">No. Simudhan is a paper trading simulator — all money is virtual. You need nothing except a school email to sign up. No Demat account, no bank account, no real money involved at any point. You're under 18 — you can't open a Demat account anyway, and that's exactly why we built this.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Can my school use Simudhan?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Absolutely — and we'd love that. We're building a teacher dashboard where schools can set up class-wide challenges, monitor student progress, and run semester-long trading competitions. If you're a teacher or school administrator interested in a pilot, join the waitlist and mention your school.</div>
+      </div>
+    </div>
+
+    <div class="faq-section">
+      <div class="faq-section-title">The data</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Is the stock data real?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Yes — with a 15-minute delay. We use real NSE stock prices, delayed by 15 minutes as required for non-brokerage educational platforms. This means prices reflect actual market conditions. The delay is a legal requirement, not a limitation. 15-min delayed is displayed at all times so you always know.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Which stocks are available?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">All Nifty 50 stocks are available on launch — RELIANCE, TCS, HDFCBANK, INFY, ITC, TATAMOTORS, WIPRO, SUNPHARMA, and 42 more. We'll expand to Nifty 100 and then Nifty 500 as the platform grows.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>What does "why it fell" mean?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">It's our most important feature. Every time a stock in your portfolio drops, a button appears — "why it fell." Tapping it shows a plain-language explanation of the reason: earnings miss, FII selling, sector rotation, RBI policy, or whatever the actual cause was. Every term in that explanation is clickable.</div>
+      </div>
+    </div>
+
+    <div class="faq-section">
+      <div class="faq-section-title">Who it's for</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Who is Simudhan built for?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Primarily Indian secondary school students aged 14–18. No prior knowledge of finance required — Simudhan starts from zero and builds up. That said, college students and young adults who are complete beginners will find it just as useful.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Do I need to know anything about stocks?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Not even a little. The whole point of Simudhan is to teach you by doing. You'll learn what a P/E ratio is by watching it affect your portfolio, not by reading a definition. Every unfamiliar term is clickable. Zara our AI tutor can explain anything from scratch.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>What is Zara?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Zara is Simudhan's AI trading tutor. She lives inside the app and answers any question about markets, your portfolio, or financial concepts in plain language with Indian examples. She won't tell you what to buy. She'll help you understand why.</div>
+      </div>
+    </div>
+
+    <div class="faq-section">
+      <div class="faq-section-title">Privacy & safety</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Is my data safe?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Yes. We collect only what's necessary — your school email and your in-app trading activity. We never sell your data to third parties. All data is encrypted in transit and at rest. Since Simudhan is designed for students under 18, we take data protection especially seriously.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Can I lose real money?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">Absolutely not. Every rupee on Simudhan is virtual. You start with ₹1,00,000 of virtual money. No real money is ever involved, no payment is ever taken. You can lose your entire virtual portfolio and it costs you nothing except a lesson learned — which is exactly the point.</div>
+      </div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">
+          <span>Does Simudhan give financial advice?</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <div class="faq-a">No — and we're very clear about this. Simudhan is an educational simulator, not a financial advisor. Zara explains concepts and market events but never recommends buying or selling a specific stock. All content is for educational purposes only.</div>
+      </div>
+    </div>
+
+    <div class="faq-cta">
+      <div>
+        <div class="cta-title">Still have questions?</div>
+        <div class="cta-sub">Try a sample quiz or ask Zara directly when we launch.</div>
+      </div>
+      <button onclick="window.location='quiz.html'">Try a sample quiz →</button>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>Built by <strong>Aishwarya Jha</strong></span>
+    <span>simudhan.trade · 2026</span>
+  </footer>
+
+  <script src="faq.js"></script>
+</body>
+</html>

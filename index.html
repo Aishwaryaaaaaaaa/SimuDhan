@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simudhan — Invest virtually. Learn for real.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location='index.html'">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+    </div>
+    <span class="nav-name">Simudhan</span>
+  </div>
+  <div class="nav-links">
+ <span onclick="window.location='index.html'">Home</span>
+ <span onclick="window.location='quiz.html'">Quiz</span>
+ <span onclick="window.location='faq.html'">FAQs</span>
+ <span onclick="window.location='trade.html'">App</span>
+<span onclick="window.location='contact.html'">Reach Out</span>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    Now in early access
+  </div>
+  <h1>Invest virtually.<br><span class="dim">Learn for real.</span></h1>
+  <p class="hero-sub">India's first paper trading simulator for teenagers. Real NSE stocks, virtual money, and an explanation for every market move.</p>
+  <div class="hero-actions">
+    <div class="input-wrap" id="waitlist">
+      <input type="email" id="emailInput" placeholder="your@school.com" />
+      <button onclick="joinWaitlist()">Get early access</button>
+    </div>
+  </div>
+  <p class="hero-note"><span id="count">47</span> students waiting · Free forever for students</p>
+  <p class="success" id="success">You're on the list! We'll be in touch.</p>
+</section>
+
+<div class="mockup-wrap">
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span class="mockup-url">simudhan.trade/dashboard</span>
+    </div>
+    <div class="mockup-body">
+      <div class="mock-tabs">
+        <span class="mt active" onclick="switchTab('portfolio',this)">Portfolio</span>
+        <span class="mt" onclick="switchTab('markets',this)">Markets</span>
+        <span class="mt" onclick="switchTab('news',this)">News</span>
+        <span class="mt" onclick="switchTab('discover',this)">Discover</span>
+        <span class="mt" onclick="switchTab('zara',this)">Zara AI</span>
+      </div>
+      <div id="mock-content"></div>
+    </div>
+  </div>
+</div>
+
+<section class="stats-section">
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">3.5%</div><div class="stat-label">of Indians invest in equities</div></div>
+    <div class="stat"><div class="stat-num">₹1L</div><div class="stat-label">virtual cash to start with</div></div>
+    <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Nifty stocks available</div></div>
+    <div class="stat"><div class="stat-num">0₹</div><div class="stat-label">real money ever at risk</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">The problem</div>
+  <h2>Financial education<br><span class="dim">is broken for teens.</span></h2>
+  <p class="section-sub">Only 3.5% of Indians invest in equities. Not because they can't — because nobody taught them how, early enough.</p>
+  <div class="prob-grid">
+    <div class="prob fade-up">
+      <div class="prob-num">01</div>
+      <div class="prob-title">Passive learning</div>
+      <div class="prob-desc">Reading about a P/E ratio is different from watching your portfolio drop because of one. No platform bridges that gap for Indian students.</div>
+    </div>
+    <div class="prob fade-up">
+      <div class="prob-num">02</div>
+      <div class="prob-title">No Indian context</div>
+      <div class="prob-desc">Investopedia uses S&P 500 examples. Indian teenagers need Nifty, HDFC Bank, and Zerodha — not the NYSE. Context makes concepts stick.</div>
+    </div>
+    <div class="prob fade-up">
+      <div class="prob-num">03</div>
+      <div class="prob-title">Too late, too abstract</div>
+      <div class="prob-desc">Most Indians first encounter investing in their 20s, after financial habits are already set. Starting at 16 with zero real risk changes everything.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">How it works</div>
+  <h2>Four steps to thinking<br><span class="dim">like an investor.</span></h2>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-num">01</div>
+      <div class="step-title">Get your capital</div>
+      <div class="step-desc">Start with ₹1,00,000 in virtual cash. Browse real NSE stocks on a 15-minute delay.</div>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">02</div>
+      <div class="step-title">Build a portfolio</div>
+      <div class="step-desc">Buy and sell across sectors. Watch your decisions play out in real market conditions.</div>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">03</div>
+      <div class="step-title">Understand every move</div>
+      <div class="step-desc">Every price change explained. Tap any stock that moves to find out exactly why.</div>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">04</div>
+      <div class="step-title">Compete and level up</div>
+      <div class="step-desc">Daily challenges, school leaderboards, XP points. Beat Nifty. Beat your classmates.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Features</div>
+  <h2>Everything you need.<br><span class="dim">Nothing you don't.</span></h2>
+  <p class="section-sub">Built for Indian teenagers who want to understand markets before they invest for real.</p>
+  <div class="feat-grid">
+    <div class="feat highlight fade-up">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+      </div>
+      <div class="feat-title">Why it fell</div>
+      <div class="feat-desc">Every stock drop explained in plain language. No jargon without a definition. No move without a reason.</div>
+    </div>
+    <div class="feat fade-up">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="feat-title">Zara — AI tutor</div>
+      <div class="feat-desc">Ask anything about markets or your portfolio. Zara answers like a patient teacher, not a textbook.</div>
+    </div>
+    <div class="feat fade-up">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="feat-title">Daily challenges</div>
+      <div class="feat-desc">Beat Nifty today. Gain 3%. Diversify across three sectors. New challenges every morning.</div>
+    </div>
+    <div class="feat fade-up">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <div class="feat-title">Tradictionary</div>
+      <div class="feat-desc">Every financial term on screen is clickable. Tap any term for an instant plain-English explanation.</div>
+    </div>
+    <div class="feat fade-up">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <div class="feat-title">Ethics quizzes</div>
+      <div class="feat-desc">Insider trading, pump and dump, SEBI rules — taught through real market dilemmas.</div>
+    </div>
+    <div class="feat fade-up">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="feat-title">School leaderboard</div>
+      <div class="feat-desc">Compete with classmates on weekly returns. Bragging rights are real even if the money isn't.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Comparison</div>
+  <h2>How we're <span class="dim">different.</span></h2>
+  <p class="section-sub">Every other platform assumes you already know. We start from zero.</p>
+  <div class="compare-wrap">
+    <div class="ctable-wrap">
+      <table class="ctable">
+        <thead>
+          <tr>
+            <th style="text-align:left">Feature</th>
+            <th>Investopedia</th>
+            <th>Zerodha Varsity</th>
+            <th class="ours">Simudhan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Indian market data</td><td class="no">✕</td><td class="yes">✓</td><td class="yes ours-col">✓</td></tr>
+          <tr><td>Paper trading simulator</td><td class="yes">✓</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+          <tr><td>Explains why stocks move</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+          <tr><td>Built for teenagers</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+          <tr><td>AI tutor</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+          <tr><td>Daily challenges</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+          <tr><td>Ethics & SEBI education</td><td class="no">✕</td><td class="partial">Partial</td><td class="yes ours-col">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<section class="cta-section">
+  <h2>Be first<br><span class="dim">in your school.</span></h2>
+  <p class="cta-sub">Launching 2026. Free forever for students. Limited beta spots available.</p>
+  <div class="cta-input">
+    <input type="email" id="ctaEmail" placeholder="your@school.com" />
+    <button onclick="ctaJoin()">Join waitlist</button>
+  </div>
+  <p class="cta-note" id="ctaNote"></p>
+</section>
+
+<footer>
+  <span>Built by <strong>Aishwarya Jha</strong></span>
+  <div class="footer-links">
+    <span onclick="window.location='FAQ.html'">FAQ</span>
+    <span onclick="window.location='quiz.html'">Quiz</span>
+    <span onclick="window.location='trade.html'">App</span>
+  </div>
+  <span>simudhan.trade · 2026</span>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

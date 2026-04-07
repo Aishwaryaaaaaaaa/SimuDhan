@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Preview — Simudhan</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="trade.css">
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location='index.html'">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+    </div>
+    <span class="nav-name">Simudhan</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="quiz.html">Quiz</a>
+    <a href="FAQ.html">FAQs</a>
+    <a href="trade.html" class="active">App</a>
+    <a href="contact.html">Reach Out</a>
+  </div>
+  <a href="index.html#waitlist" class="nav-cta">Join waitlist</a>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow"><div class="eyebrow-line"></div><span>Coming soon</span></div>
+  <h1>The app is<br><span class="dim">almost here.</span></h1>
+  <p class="page-sub">Here's a sneak peek at what's coming. Virtual trading, real NSE stocks, daily challenges, and an AI tutor — all in one place.</p>
+  <div class="coming-badges">
+    <div class="badge">15-min delayed NSE data</div>
+    <div class="badge">Rs 1,00,000 virtual portfolio</div>
+    <div class="badge">Zara AI tutor</div>
+    <div class="badge">Daily challenges</div>
+    <div class="badge">School leaderboards</div>
+    <div class="badge">Free forever</div>
+  </div>
+</div>
+
+<div class="preview-wrap">
+  <div class="preview-label-row">
+    <div class="preview-live-dot"></div>
+    <span>App preview — not the final design</span>
+  </div>
+
+  <div class="screen-label">Portfolio dashboard</div>
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span class="mockup-url">simudhan.trade/dashboard</span>
+    </div>
+    <div class="mockup-body">
+      <div class="mock-tabs">
+        <span class="mt active" onclick="switchTab('portfolio',this)">Portfolio</span>
+        <span class="mt" onclick="switchTab('markets',this)">Markets</span>
+        <span class="mt" onclick="switchTab('news',this)">News</span>
+        <span class="mt" onclick="switchTab('discover',this)">Discover</span>
+        <span class="mt" onclick="switchTab('zara',this)">Zara AI</span>
+      </div>
+      <div id="tab-content"></div>
+    </div>
+  </div>
+
+  <div class="screen-label" style="margin-top:3rem">Daily challenges</div>
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span class="mockup-url">simudhan.trade/challenges</span>
+    </div>
+    <div class="mockup-body">
+      <div class="ch-grid">
+        <div class="ch"><div class="ch-title">Gain 3% today</div><div class="ch-desc">Close the day with a 3%+ portfolio gain</div><div class="ch-bar"><div class="ch-fill" style="width:40%;background:#60a5fa"></div></div><div class="ch-xp">+50 XP</div></div>
+        <div class="ch"><div class="ch-title">Beat Nifty 50</div><div class="ch-desc">Your return must exceed Nifty's daily return</div><div class="ch-bar"><div class="ch-fill" style="width:84%;background:var(--green)"></div></div><div class="ch-xp">+80 XP</div></div>
+        <div class="ch done"><div class="ch-title">Quiz master</div><div class="ch-desc">Answer 3 ethics questions correctly</div><div class="ch-bar"><div class="ch-fill" style="width:100%;background:var(--green)"></div></div><div class="ch-xp done">Done +30 XP</div></div>
+        <div class="ch"><div class="ch-title">Diversify</div><div class="ch-desc">Hold stocks from 3 different sectors</div><div class="ch-bar"><div class="ch-fill" style="width:66%;background:#a78bfa"></div></div><div class="ch-xp">+40 XP</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-label" style="margin-top:3rem">Zara — AI tutor</div>
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span class="mockup-url">simudhan.trade/zara</span>
+    </div>
+    <div class="mockup-body">
+      <div class="zara-header">
+        <div class="zara-av">Z</div>
+        <div><div class="zara-name">Zara</div><div class="zara-status">Your AI trading tutor · Always online</div></div>
+      </div>
+      <div class="chat">
+        <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">Hi! I'm Zara, your personal trading tutor. Ask me anything about markets, stocks, or your portfolio!</div></div>
+        <div class="msg user"><div class="msg-bubble user-bubble">Why did TCS fall today?</div><div class="msg-av user-av">R</div></div>
+        <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">TCS fell 2.8% today because it missed revenue estimates by Rs 1,027 crore. This is called an <span class="term">earnings miss</span>. When a company earns less than analysts expected, investors get worried and sell.</div></div>
+        <div class="msg user"><div class="msg-bubble user-bubble">What is an earnings miss?</div><div class="msg-av user-av">R</div></div>
+        <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">An earnings miss is when a company's actual profit or revenue is lower than what analysts predicted. Think of it like expecting 90% in an exam but scoring 85% — you still passed, but it's below expectations.</div></div>
+      </div>
+      <div class="chat-input-row">
+        <div class="chat-input">Ask Zara anything about markets...</div>
+        <div class="chat-send">↑</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="trade-cta">
+  <h2>Want early access?</h2>
+  <p>Join the waitlist and be first when we launch in 2026.</p>
+  <a href="index.html#waitlist" class="btn-white">Join waitlist</a>
+</div>
+
+<footer>
+  <span>Built by <strong>Aishwarya Jha</strong></span>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="FAQ.html">FAQ</a>
+    <a href="quiz.html">Quiz</a>
+    <a href="contact.html">Reach Out</a>
+  </div>
+  <span>simudhan.trade · 2026</span>
+</footer>
+
+<script src="trade.js"></script>
+</body>
+</html>
