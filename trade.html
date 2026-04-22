@@ -4,127 +4,654 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>App Preview — Simudhan</title>
-  <link rel="stylesheet" href="shared.css">
-  <link rel="stylesheet" href="trade.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- COLORMIND PALETTE ---------- */
+    :root {
+      --bg-primary: #272E3A;
+      --bg-secondary: #1F2530;
+      --bg-tertiary: #2C3442;
+      --border-light: #3A4453;
+      --border-medium: #5B5968;
+      --text-primary: #D5DEE3;
+      --text-secondary: #7389A6;
+      --text-muted: #7F788E;
+      --accent: #7389A6;
+      --accent-glow: rgba(115, 137, 166, 0.25);
+      --green: #4ade80;
+      --red: #f87171;
+      --gradient-shimmer: linear-gradient(90deg, #7389A6, #7F788E, #5B5968, #7389A6);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ---------- CUSTOM CURSOR ---------- */
+    .cursor {
+      width: 24px; height: 24px;
+      border: 2px solid var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.15s ease, width 0.2s, height 0.2s, background 0.2s;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.2s;
+    }
+    .cursor.hover {
+      width: 54px; height: 54px;
+      background: rgba(213, 222, 227, 0.08);
+      border-color: var(--accent);
+      mix-blend-mode: normal;
+    }
+    .cursor-dot.hover { opacity: 0; }
+
+    /* ---------- PARTICLE BACKGROUND ---------- */
+    #particle-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: 
+        linear-gradient(rgba(213,222,227,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(213,222,227,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ---------- TOP BAR & NAV ---------- */
+    .top-bar {
+      height: 3px;
+      background: var(--gradient-shimmer);
+      background-size: 300% 100%;
+      animation: shimmer 4s linear infinite;
+      position: relative;
+      z-index: 100;
+    }
+    @keyframes shimmer { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 3rem;
+      border-bottom: 1px solid var(--border-light);
+      background: rgba(39, 46, 58, 0.8);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+    .nav-icon {
+      width: 28px; height: 28px; background: var(--text-primary);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-icon svg { width: 14px; height: 14px; fill: none; stroke: var(--bg-primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-secondary); align-items: center; }
+    .nav-links a {
+      color: var(--text-secondary); text-decoration: none;
+      transition: color 0.2s, transform 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-primary); transform: translateY(-1px); }
+    .nav-links a.active { color: var(--text-primary); font-weight: 600; }
+    .nav-cta {
+      background: var(--text-primary); color: var(--bg-primary);
+      border: none; border-radius: 99px; padding: 9px 22px;
+      font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none;
+      transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .nav-cta:hover { background: var(--accent); color: white; transform: scale(1.02); }
+
+    /* ---------- PAGE HERO ---------- */
+    .page-hero {
+      position: relative; z-index: 2;
+      max-width: 800px; padding: 5rem 3rem 3rem;
+    }
+    .eyebrow {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .eyebrow-line {
+      width: 30px; height: 1px; background: var(--border-medium);
+    }
+    .eyebrow span {
+      font-size: 11px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    h1 {
+      font-size: 56px; font-weight: 800; line-height: 1.05;
+      letter-spacing: -3px; margin-bottom: 1rem;
+      color: var(--text-primary); text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .dim { color: var(--text-muted); }
+    .page-sub {
+      font-size: 16px; color: var(--text-secondary);
+      line-height: 1.7; max-width: 500px; margin-bottom: 1.5rem;
+    }
+    .coming-badges {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem;
+    }
+    .badge {
+      font-size: 12px; font-weight: 500; color: var(--text-secondary);
+      background: var(--bg-secondary); border: 1px solid var(--border-light);
+      padding: 6px 16px; border-radius: 99px;
+      transition: all 0.2s;
+    }
+    .badge:hover {
+      background: var(--bg-tertiary); border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* ---------- PREVIEW SECTION ---------- */
+    .preview-wrap {
+      max-width: 900px; margin: 0 auto; padding: 0 2rem 5rem;
+      position: relative; z-index: 2;
+    }
+    .preview-label-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text-muted); margin-bottom: 1.5rem;
+    }
+    .preview-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .screen-label {
+      font-size: 12px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;
+    }
+
+    /* Mockups */
+    .mockup {
+      border: 1px solid var(--border-light); border-radius: 16px;
+      overflow: hidden; background: var(--bg-secondary);
+      backdrop-filter: blur(8px); box-shadow: 0 25px 40px -12px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 1rem;
+    }
+    .mockup:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 35px 50px -15px rgba(0,0,0,0.5);
+    }
+    .mockup-bar {
+      background: var(--bg-tertiary); border-bottom: 1px solid var(--border-light);
+      padding: 0.65rem 1rem; display: flex; align-items: center; gap: 6px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-light); }
+    .mockup-url {
+      font-size: 11px; color: var(--text-muted); margin-left: 7px;
+      font-family: monospace;
+    }
+    .mockup-body { padding: 1.5rem; }
+
+    /* Tabs */
+    .mock-tabs {
+      display: flex; gap: 2px; background: var(--bg-primary);
+      border: 1px solid var(--border-light); border-radius: 9px;
+      padding: 3px; margin-bottom: 1.25rem; width: fit-content;
+    }
+    .mt {
+      padding: 5px 16px; border-radius: 7px; font-size: 12px;
+      font-weight: 500; color: var(--text-secondary); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mt.active { background: var(--bg-tertiary); color: var(--text-primary); }
+    .mt:hover:not(.active) { color: var(--text-primary); background: rgba(115,137,166,0.1); }
+
+    /* Stats cards */
+    .mock-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 10px; }
+    .ms {
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      border-radius: 9px; padding: 0.75rem;
+    }
+    .ms-l { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; }
+    .ms-v { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+    .ms-c { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .ms-c.up { color: var(--green); }
+    .mock-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 12px; background: var(--bg-tertiary);
+      border: 1px solid var(--border-light); border-radius: 9px;
+      margin-bottom: 6px; gap: 8px;
+    }
+    .mock-stock-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .mock-stock-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .mock-price { font-size: 13px; font-weight: 600; color: var(--text-primary); font-family: monospace; }
+    .chg-up { font-size: 11px; font-weight: 600; color: var(--green); background: rgba(74,222,128,0.1); padding: 3px 9px; border-radius: 99px; }
+    .chg-dn { font-size: 11px; font-weight: 600; color: var(--red); background: rgba(248,113,113,0.1); padding: 3px 9px; border-radius: 99px; }
+    .why-tag {
+      font-size: 10px; color: var(--text-secondary); background: var(--bg-primary);
+      border: 1px solid var(--border-light); padding: 2px 9px; border-radius: 5px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .why-tag:hover { color: var(--text-primary); border-color: var(--border-medium); }
+
+    /* News & Facts */
+    .news-item, .fact-item {
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      border-radius: 9px; padding: 10px 12px; margin-bottom: 7px;
+    }
+    .news-tag-pill {
+      font-size: 10px; font-weight: 600; color: var(--text-muted);
+      background: var(--bg-primary); border: 1px solid var(--border-light);
+      padding: 1px 7px; border-radius: 99px; display: inline-block;
+      margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .news-headline { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.4; margin-bottom: 3px; }
+    .news-meta { font-size: 10px; color: var(--text-muted); }
+    .fact-lbl {
+      font-size: 10px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px;
+    }
+    .fact-txt { font-size: 12px; color: var(--text-primary); line-height: 1.5; margin-bottom: 3px; }
+    .fact-src { font-size: 10px; color: var(--text-muted); }
+
+    /* Challenges */
+    .ch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ch {
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      border-radius: 9px; padding: 10px 12px; transition: all 0.2s;
+    }
+    .ch.done { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); }
+    .ch-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+    .ch-desc { font-size: 10px; color: var(--text-muted); margin-bottom: 7px; line-height: 1.4; }
+    .ch-bar { height: 3px; background: var(--bg-primary); border-radius: 99px; overflow: hidden; }
+    .ch-fill { height: 100%; border-radius: 99px; }
+    .ch-xp { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
+    .ch-xp.done { color: var(--green); }
+
+    /* Zara AI */
+    .zara-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border-light);
+    }
+    .zara-av {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--bg-tertiary);
+      border: 1px solid var(--border-light); display: flex; align-items: center;
+      justify-content: center; font-size: 12px; font-weight: 700; color: var(--text-primary);
+    }
+    .zara-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .zara-status { font-size: 11px; color: var(--green); margin-top: 1px; }
+    .chat { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .msg { display: flex; align-items: flex-start; gap: 7px; }
+    .msg.user { flex-direction: row-reverse; }
+    .msg-av {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--bg-tertiary);
+      border: 1px solid var(--border-light); display: flex; align-items: center;
+      justify-content: center; font-size: 9px; font-weight: 700; color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .msg-bubble { padding: 8px 11px; border-radius: 10px; font-size: 12px; line-height: 1.5; max-width: 85%; }
+    .bot-bubble { background: var(--bg-tertiary); border: 1px solid var(--border-light); color: var(--text-secondary); border-radius: 3px 10px 10px 10px; }
+    .user-bubble { background: var(--text-primary); color: var(--bg-primary); font-weight: 500; border-radius: 10px 3px 10px 10px; }
+    .term { background: rgba(74,222,128,0.15); color: var(--green); padding: 0 4px; border-radius: 3px; }
+    .chat-input-row {
+      display: flex; align-items: center; gap: 7px; background: var(--bg-tertiary);
+      border: 1px solid var(--border-light); border-radius: 10px; padding: 8px 11px;
+    }
+    .chat-input { flex: 1; font-size: 11px; color: var(--text-muted); }
+    .chat-send {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .chat-send:hover { background: var(--text-primary); color: var(--bg-primary); }
+
+    /* CTA */
+    .trade-cta {
+      position: relative; z-index: 2; text-align: center;
+      padding: 4rem 2rem 6rem; max-width: 600px; margin: 0 auto;
+    }
+    .trade-cta h2 {
+      font-size: 48px; font-weight: 800; letter-spacing: -2px;
+      margin-bottom: 0.75rem; color: var(--text-primary);
+    }
+    .trade-cta p {
+      font-size: 16px; color: var(--text-secondary); margin-bottom: 2rem;
+    }
+    .btn-white {
+      display: inline-block; background: var(--text-primary); color: var(--bg-primary);
+      border: none; border-radius: 99px; padding: 12px 28px;
+      font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none;
+      transition: all 0.2s; box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+    .btn-white:hover {
+      background: var(--accent); color: white; transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer {
+      position: relative; z-index: 2; padding: 2rem 3rem;
+      border-top: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--text-muted);
+    }
+    footer strong { color: var(--text-secondary); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--text-primary); }
+
+    /* Magnetic effect */
+    .magnetic { transition: transform 0.2s cubic-bezier(0.23,1,0.32,1); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      h1 { font-size: 42px; letter-spacing: -2px; }
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-hero { padding: 4rem 1.5rem 2rem; }
+      .preview-wrap { padding: 0 1.5rem 4rem; }
+      .mock-stats { grid-template-columns: 1fr 1fr; }
+      .ch-grid { grid-template-columns: 1fr; }
+      .trade-cta h2 { font-size: 36px; }
+    }
+  </style>
 </head>
 <body>
-<div class="top-bar"></div>
-<div class="grid-bg"></div>
 
-<nav>
-  <div class="nav-logo" onclick="window.location='index.html'">
-    <div class="nav-icon">
-      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-    </div>
-    <span class="nav-name">Simudhan</span>
-  </div>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="quiz.html">Quiz</a>
-    <a href="FAQ.html">FAQs</a>
-    <a href="trade.html" class="active">App</a>
-    <a href="contact.html">Reach Out</a>
-  </div>
-  <a href="index.html#waitlist" class="nav-cta">Join waitlist</a>
-</nav>
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-dot"></div>
 
-<div class="page-hero">
-  <div class="eyebrow"><div class="eyebrow-line"></div><span>Coming soon</span></div>
-  <h1>The app is<br><span class="dim">almost here.</span></h1>
-  <p class="page-sub">Here's a sneak peek at what's coming. Virtual trading, real NSE stocks, daily challenges, and an AI tutor — all in one place.</p>
-  <div class="coming-badges">
-    <div class="badge">15-min delayed NSE data</div>
-    <div class="badge">Rs 1,00,000 virtual portfolio</div>
-    <div class="badge">Zara AI tutor</div>
-    <div class="badge">Daily challenges</div>
-    <div class="badge">School leaderboards</div>
-    <div class="badge">Free forever</div>
-  </div>
-</div>
+  <!-- Particle Canvas -->
+  <canvas id="particle-canvas"></canvas>
+  <div class="grid-bg"></div>
 
-<div class="preview-wrap">
-  <div class="preview-label-row">
-    <div class="preview-live-dot"></div>
-    <span>App preview — not the final design</span>
-  </div>
+  <div class="top-bar"></div>
 
-  <div class="screen-label">Portfolio dashboard</div>
-  <div class="mockup">
-    <div class="mockup-bar">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-      <span class="mockup-url">simudhan.trade/dashboard</span>
-    </div>
-    <div class="mockup-body">
-      <div class="mock-tabs">
-        <span class="mt active" onclick="switchTab('portfolio',this)">Portfolio</span>
-        <span class="mt" onclick="switchTab('markets',this)">Markets</span>
-        <span class="mt" onclick="switchTab('news',this)">News</span>
-        <span class="mt" onclick="switchTab('discover',this)">Discover</span>
-        <span class="mt" onclick="switchTab('zara',this)">Zara AI</span>
+  <nav>
+    <div class="nav-logo magnetic" onclick="window.location='index.html'">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
       </div>
-      <div id="tab-content"></div>
+      <span class="nav-name">Simudhan</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="quiz.html">Quiz</a>
+      <a href="faq.html">FAQs</a>
+      <a href="trade.html" class="active">App</a>
+      <a href="contact.html">Reach Out</a>
+    </div>
+    <a href="index.html#waitlist" class="nav-cta magnetic">Join waitlist</a>
+  </nav>
+
+  <div class="page-hero">
+    <div class="eyebrow"><div class="eyebrow-line"></div><span>Coming soon</span></div>
+    <h1>The app is<br><span class="dim">almost here.</span></h1>
+    <p class="page-sub">Here's a sneak peek at what's coming. Virtual trading, real NSE stocks, daily challenges, and an AI tutor — all in one place.</p>
+    <div class="coming-badges">
+      <div class="badge">15-min delayed NSE data</div>
+      <div class="badge">₹1,00,000 virtual portfolio</div>
+      <div class="badge">Zara AI tutor</div>
+      <div class="badge">Daily challenges</div>
+      <div class="badge">School leaderboards</div>
+      <div class="badge">Free forever</div>
     </div>
   </div>
 
-  <div class="screen-label" style="margin-top:3rem">Daily challenges</div>
-  <div class="mockup">
-    <div class="mockup-bar">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-      <span class="mockup-url">simudhan.trade/challenges</span>
+  <div class="preview-wrap">
+    <div class="preview-label-row">
+      <div class="preview-live-dot"></div>
+      <span>App preview — not the final design</span>
     </div>
-    <div class="mockup-body">
-      <div class="ch-grid">
-        <div class="ch"><div class="ch-title">Gain 3% today</div><div class="ch-desc">Close the day with a 3%+ portfolio gain</div><div class="ch-bar"><div class="ch-fill" style="width:40%;background:#60a5fa"></div></div><div class="ch-xp">+50 XP</div></div>
-        <div class="ch"><div class="ch-title">Beat Nifty 50</div><div class="ch-desc">Your return must exceed Nifty's daily return</div><div class="ch-bar"><div class="ch-fill" style="width:84%;background:var(--green)"></div></div><div class="ch-xp">+80 XP</div></div>
-        <div class="ch done"><div class="ch-title">Quiz master</div><div class="ch-desc">Answer 3 ethics questions correctly</div><div class="ch-bar"><div class="ch-fill" style="width:100%;background:var(--green)"></div></div><div class="ch-xp done">Done +30 XP</div></div>
-        <div class="ch"><div class="ch-title">Diversify</div><div class="ch-desc">Hold stocks from 3 different sectors</div><div class="ch-bar"><div class="ch-fill" style="width:66%;background:#a78bfa"></div></div><div class="ch-xp">+40 XP</div></div>
+
+    <div class="screen-label">Portfolio dashboard</div>
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span class="mockup-url">simudhan.trade/dashboard</span>
+      </div>
+      <div class="mockup-body">
+        <div class="mock-tabs">
+          <span class="mt active" onclick="switchTab('portfolio',this)">Portfolio</span>
+          <span class="mt" onclick="switchTab('markets',this)">Markets</span>
+          <span class="mt" onclick="switchTab('news',this)">News</span>
+          <span class="mt" onclick="switchTab('discover',this)">Discover</span>
+          <span class="mt" onclick="switchTab('zara',this)">Zara AI</span>
+        </div>
+        <div id="tab-content"></div>
       </div>
     </div>
-  </div>
 
-  <div class="screen-label" style="margin-top:3rem">Zara — AI tutor</div>
-  <div class="mockup">
-    <div class="mockup-bar">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-      <span class="mockup-url">simudhan.trade/zara</span>
-    </div>
-    <div class="mockup-body">
-      <div class="zara-header">
-        <div class="zara-av">Z</div>
-        <div><div class="zara-name">Zara</div><div class="zara-status">Your AI trading tutor · Always online</div></div>
+    <div class="screen-label" style="margin-top:3rem">Daily challenges</div>
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span class="mockup-url">simudhan.trade/challenges</span>
       </div>
-      <div class="chat">
-        <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">Hi! I'm Zara, your personal trading tutor. Ask me anything about markets, stocks, or your portfolio!</div></div>
-        <div class="msg user"><div class="msg-bubble user-bubble">Why did TCS fall today?</div><div class="msg-av user-av">R</div></div>
-        <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">TCS fell 2.8% today because it missed revenue estimates by Rs 1,027 crore. This is called an <span class="term">earnings miss</span>. When a company earns less than analysts expected, investors get worried and sell.</div></div>
-        <div class="msg user"><div class="msg-bubble user-bubble">What is an earnings miss?</div><div class="msg-av user-av">R</div></div>
-        <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">An earnings miss is when a company's actual profit or revenue is lower than what analysts predicted. Think of it like expecting 90% in an exam but scoring 85% — you still passed, but it's below expectations.</div></div>
-      </div>
-      <div class="chat-input-row">
-        <div class="chat-input">Ask Zara anything about markets...</div>
-        <div class="chat-send">↑</div>
+      <div class="mockup-body">
+        <div class="ch-grid">
+          <div class="ch"><div class="ch-title">Gain 3% today</div><div class="ch-desc">Close the day with a 3%+ portfolio gain</div><div class="ch-bar"><div class="ch-fill" style="width:40%;background:#60a5fa"></div></div><div class="ch-xp">+50 XP</div></div>
+          <div class="ch"><div class="ch-title">Beat Nifty 50</div><div class="ch-desc">Your return must exceed Nifty's daily return</div><div class="ch-bar"><div class="ch-fill" style="width:84%;background:var(--green)"></div></div><div class="ch-xp">+80 XP</div></div>
+          <div class="ch done"><div class="ch-title">Quiz master</div><div class="ch-desc">Answer 3 ethics questions correctly</div><div class="ch-bar"><div class="ch-fill" style="width:100%;background:var(--green)"></div></div><div class="ch-xp done">Done +30 XP</div></div>
+          <div class="ch"><div class="ch-title">Diversify</div><div class="ch-desc">Hold stocks from 3 different sectors</div><div class="ch-bar"><div class="ch-fill" style="width:66%;background:#a78bfa"></div></div><div class="ch-xp">+40 XP</div></div>
+        </div>
       </div>
     </div>
+
+    <div class="screen-label" style="margin-top:3rem">Zara — AI tutor</div>
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span class="mockup-url">simudhan.trade/zara</span>
+      </div>
+      <div class="mockup-body">
+        <div class="zara-header">
+          <div class="zara-av">Z</div>
+          <div><div class="zara-name">Zara</div><div class="zara-status">Your AI trading tutor · Always online</div></div>
+        </div>
+        <div class="chat">
+          <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">Hi! I'm Zara, your personal trading tutor. Ask me anything about markets, stocks, or your portfolio!</div></div>
+          <div class="msg user"><div class="msg-bubble user-bubble">Why did TCS fall today?</div><div class="msg-av user-av">R</div></div>
+          <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">TCS fell 2.8% today because it missed revenue estimates by ₹1,027 crore. This is called an <span class="term">earnings miss</span>. When a company earns less than analysts expected, investors get worried and sell.</div></div>
+          <div class="msg user"><div class="msg-bubble user-bubble">What is an earnings miss?</div><div class="msg-av user-av">R</div></div>
+          <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">An earnings miss is when a company's actual profit or revenue is lower than what analysts predicted. Think of it like expecting 90% in an exam but scoring 85% — you still passed, but it's below expectations.</div></div>
+        </div>
+        <div class="chat-input-row">
+          <div class="chat-input">Ask Zara anything about markets...</div>
+          <div class="chat-send">↑</div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="trade-cta">
-  <h2>Want early access?</h2>
-  <p>Join the waitlist and be first when we launch in 2026.</p>
-  <a href="index.html#waitlist" class="btn-white">Join waitlist</a>
-</div>
-
-<footer>
-  <span>Built by <strong>Aishwarya Jha</strong></span>
-  <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="FAQ.html">FAQ</a>
-    <a href="quiz.html">Quiz</a>
-    <a href="contact.html">Reach Out</a>
+  <div class="trade-cta">
+    <h2>Want early access?</h2>
+    <p>Join the waitlist and be first when we launch in 2026.</p>
+    <a href="index.html#waitlist" class="btn-white magnetic">Join waitlist</a>
   </div>
-  <span>simudhan.trade · 2026</span>
-</footer>
 
-<script src="trade.js"></script>
+  <footer>
+    <span>Built by <strong>Aishwarya Jha</strong></span>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="faq.html">FAQ</a>
+      <a href="quiz.html">Quiz</a>
+      <a href="contact.html">Reach Out</a>
+    </div>
+    <span>simudhan.trade · 2026</span>
+  </footer>
+
+  <script>
+    (function(){
+      "use strict";
+
+      // ---------- CUSTOM CURSOR & MAGNETIC ----------
+      const cursor = document.querySelector('.cursor');
+      const cursorDot = document.querySelector('.cursor-dot');
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+      });
+      const magnets = document.querySelectorAll('.magnetic');
+      magnets.forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursorDot.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); cursorDot.classList.remove('hover'); });
+      });
+
+      // ---------- PARTICLE NETWORK ----------
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+      const particleCount = 60;
+      const connectionDistance = 140;
+      let mouse = { x: null, y: null, radius: 100 };
+
+      function initCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            size: Math.random() * 2.2 + 1
+          });
+        }
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > width) p.vx *= -1;
+          if (p.y < 0 || p.y > height) p.vy *= -1;
+          if (mouse.x && mouse.y) {
+            let dx = p.x - mouse.x;
+            let dy = p.y - mouse.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < mouse.radius) {
+              let force = (mouse.radius - dist) / mouse.radius;
+              let angle = Math.atan2(dy, dx);
+              p.x += Math.cos(angle) * force * 5;
+              p.y += Math.sin(angle) * force * 5;
+            }
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+          ctx.fillStyle = '#7389A6';
+          ctx.shadowColor = '#7F788E';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+        });
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#5B5968';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i+1; j < particles.length; j++) {
+            let dx = particles[i].x - particles[j].x;
+            let dy = particles[i].y - particles[j].y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < connectionDistance) {
+              ctx.globalAlpha = 1 - dist/connectionDistance;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(drawParticles);
+      }
+
+      window.addEventListener('resize', initCanvas);
+      document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+      document.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+      initCanvas();
+      drawParticles();
+
+      // ---------- TAB CONTENT ----------
+      const TABS = {
+        portfolio: `
+          <div class="mock-stats">
+            <div class="ms"><div class="ms-l">Portfolio</div><div class="ms-v">₹1,08,420</div><div class="ms-c up">+8.42% total</div></div>
+            <div class="ms"><div class="ms-l">Cash</div><div class="ms-v">₹42,180</div><div class="ms-c">available</div></div>
+            <div class="ms"><div class="ms-l">Today</div><div class="ms-v">+₹1,240</div><div class="ms-c up">4 holdings</div></div>
+            <div class="ms"><div class="ms-l">Streak</div><div class="ms-v">7 days</div><div class="ms-c">Level 5</div></div>
+          </div>
+          <div class="mock-row"><div><div class="mock-stock-name">Reliance Industries</div><div class="mock-stock-sub">RELIANCE · Energy</div></div><div class="mock-price">₹2,847</div><span class="chg-up">+1.2%</span><span class="why-tag">—</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">Tata Consultancy</div><div class="mock-stock-sub">TCS · IT</div></div><div class="mock-price">₹3,542</div><span class="chg-dn">-2.8%</span><span class="why-tag">Why it fell</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">ITC Ltd</div><div class="mock-stock-sub">ITC · FMCG</div></div><div class="mock-price">₹428</div><span class="chg-dn">-0.5%</span><span class="why-tag">Why it fell</span></div>
+        `,
+        markets: `
+          <div class="mock-stats">
+            <div class="ms"><div class="ms-l">Nifty 50</div><div class="ms-v">24,218</div><div class="ms-c up">+0.84%</div></div>
+            <div class="ms"><div class="ms-l">Sensex</div><div class="ms-v">79,943</div><div class="ms-c up">+0.77%</div></div>
+            <div class="ms"><div class="ms-l">India VIX</div><div class="ms-v">13.42</div><div class="ms-c">calm</div></div>
+            <div class="ms"><div class="ms-l">USD/INR</div><div class="ms-v">84.32</div><div class="ms-c">+0.14%</div></div>
+          </div>
+          <div class="mock-row"><div><div class="mock-stock-name">Reliance Industries</div><div class="mock-stock-sub">RELIANCE · Energy</div></div><div class="mock-price">₹2,847</div><span class="chg-up">+1.2%</span><span class="why-tag">Why it rose</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">Tata Consultancy</div><div class="mock-stock-sub">TCS · IT</div></div><div class="mock-price">₹3,542</div><span class="chg-dn">-2.8%</span><span class="why-tag">Why it fell</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">Tata Motors</div><div class="mock-stock-sub">TATAMOTORS · Auto</div></div><div class="mock-price">₹924</div><span class="chg-up">+2.1%</span><span class="why-tag">Why it rose</span></div>
+        `,
+        news: `
+          <div class="news-item"><div class="news-tag-pill">Results</div><div class="news-headline">TCS Q3: Revenue misses estimates by ₹1,027 crore — stock falls 2.8%</div><div class="news-meta">ET Markets · 2h ago</div></div>
+          <div class="news-item"><div class="news-tag-pill">RBI</div><div class="news-headline">RBI holds repo rate at 6.5% — signals February cut if inflation cools</div><div class="news-meta">Mint · 4h ago</div></div>
+          <div class="news-item"><div class="news-tag-pill">FII</div><div class="news-headline">FIIs net sell ₹4,200 crore — DIIs absorb with ₹3,800 crore buying</div><div class="news-meta">CNBC TV18 · 6h ago</div></div>
+          <div class="news-item"><div class="news-tag-pill">IPO</div><div class="news-headline">HDB Financial Services IPO subscribed 16.3x on final day</div><div class="news-meta">Moneycontrol · 8h ago</div></div>
+        `,
+        discover: `
+          <div class="fact-item"><div class="fact-lbl">Fact of the day</div><div class="fact-txt">The BSE, founded in 1875 under a banyan tree in Mumbai, is Asia's oldest stock exchange. It now lists over 5,500 companies.</div><div class="fact-src">Source: BSE India</div></div>
+          <div class="fact-item"><div class="fact-lbl">Did you know?</div><div class="fact-txt">₹1 lakh invested in Nifty 50 at its 1996 launch would be worth over ₹25 lakh today — a 25x return without picking a single stock.</div><div class="fact-src">Source: NSE India</div></div>
+          <div class="fact-item"><div class="fact-lbl">Investor wisdom</div><div class="fact-txt">Warren Buffett bought his first stock at age 11. He says his biggest mistake was waiting that long.</div><div class="fact-src">Source: Berkshire Hathaway</div></div>
+        `,
+        zara: `
+          <div class="chat">
+            <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">Hi! I'm Zara. Ask me anything about markets, your portfolio, or any term you don't understand!</div></div>
+            <div class="msg user"><div class="msg-bubble user-bubble">Why did TCS fall today?</div><div class="msg-av user-av">R</div></div>
+            <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">TCS fell 2.8% because it missed revenue estimates by ₹1,027 crore — this is called an <span class="term">earnings miss</span>. FIIs sold ₹2,100 crore of TCS shares on the day.</div></div>
+            <div class="msg user"><div class="msg-bubble user-bubble">What is FII?</div><div class="msg-av user-av">R</div></div>
+            <div class="msg bot"><div class="msg-av bot-av">Z</div><div class="msg-bubble bot-bubble">FII stands for Foreign Institutional Investor — large overseas funds that invest in Indian markets. When they sell heavily, it can drag the whole market down!</div></div>
+          </div>
+          <div class="chat-input-row"><div class="chat-input">Ask Zara anything...</div><div class="chat-send">↑</div></div>
+        `
+      };
+
+      window.switchTab = function(tab, el) {
+        document.querySelectorAll('.mt').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('tab-content').innerHTML = TABS[tab];
+      };
+
+      document.getElementById('tab-content').innerHTML = TABS.portfolio;
+
+    })();
+  </script>
 </body>
 </html>

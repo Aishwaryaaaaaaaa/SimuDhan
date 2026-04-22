@@ -5,224 +5,674 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simudhan — Invest virtually. Learn for real.</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ---------- COLORMIND PALETTE ---------- */
+    :root {
+      --bg-primary: #272E3A;
+      --bg-secondary: #1F2530;
+      --bg-tertiary: #2C3442;
+      --border-light: #3A4453;
+      --border-medium: #5B5968;
+      --text-primary: #D5DEE3;
+      --text-secondary: #7389A6;
+      --text-muted: #7F788E;
+      --accent: #7389A6;
+      --accent-glow: rgba(115, 137, 166, 0.25);
+      --green: #4ade80;
+      --red: #f87171;
+      --gradient-shimmer: linear-gradient(90deg, #7389A6, #7F788E, #5B5968, #7389A6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ---------- CUSTOM CURSOR ---------- */
+    .cursor {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.15s ease, width 0.2s, height 0.2s, background 0.2s;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.2s;
+    }
+    .cursor.hover {
+      width: 54px;
+      height: 54px;
+      background: rgba(213, 222, 227, 0.08);
+      border-color: var(--accent);
+      mix-blend-mode: normal;
+    }
+    .cursor-dot.hover { opacity: 0; }
+
+    /* ---------- ANIMATED PARTICLE BACKGROUND ---------- */
+    #particle-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    /* ---------- GRID OVERLAY ---------- */
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: 
+        linear-gradient(rgba(213,222,227,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(213,222,227,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ---------- TOP BAR & NAV ---------- */
+    .top-bar {
+      height: 3px;
+      background: var(--gradient-shimmer);
+      background-size: 300% 100%;
+      animation: shimmer 4s linear infinite;
+      position: relative;
+      z-index: 100;
+    }
+    @keyframes shimmer { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 3rem;
+      border-bottom: 1px solid var(--border-light);
+      background: rgba(39, 46, 58, 0.8);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+    .nav-icon {
+      width: 28px; height: 28px; background: var(--text-primary);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-icon svg { width: 14px; height: 14px; fill: none; stroke: var(--bg-primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-secondary); cursor: pointer; }
+    .nav-links span { transition: color 0.2s, transform 0.2s; }
+    .nav-links span:hover { color: var(--text-primary); transform: translateY(-1px); }
+    .nav-cta {
+      background: var(--text-primary); color: var(--bg-primary);
+      border: none; border-radius: 99px; padding: 9px 22px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .nav-cta:hover { background: var(--accent); color: white; transform: scale(1.02); }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      position: relative; z-index: 2; text-align: center;
+      padding: 8rem 2rem 5rem; max-width: 860px; margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--text-secondary); font-weight: 500;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2rem;
+      background: var(--bg-tertiary); border: 1px solid var(--border-medium);
+      padding: 6px 14px; border-radius: 99px; backdrop-filter: blur(4px);
+    }
+    .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    h1 {
+      font-size: 76px; font-weight: 900; line-height: 1; letter-spacing: -4px;
+      margin-bottom: 1.5rem; color: var(--text-primary);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .dim { color: var(--text-muted); }
+    .hero-sub {
+      font-size: 18px; color: var(--text-secondary); line-height: 1.65;
+      max-width: 500px; margin: 0 auto 2.5rem;
+    }
+    .input-wrap {
+  display: flex; align-items: center; background: var(--bg-secondary);
+  border: 1px solid var(--border-light); border-radius: 99px;
+  padding: 6px 6px 6px 20px; gap: 6px; max-width: 420px; width: 100%;
+  margin: 0 auto;  /* 👈 ADD THIS LINE */
+  transition: border-color 0.2s, box-shadow 0.2s; backdrop-filter: blur(4px);
+}
+    .input-wrap:focus-within {
+      border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .input-wrap input {
+      flex: 1; background: transparent; border: none; outline: none;
+      font-size: 14px; color: var(--text-primary); font-family: inherit;
+    }
+    .input-wrap input::placeholder { color: var(--text-muted); }
+    .input-wrap button, .cta-input button {
+      background: var(--text-primary); color: var(--bg-primary);
+      border: none; border-radius: 99px; padding: 10px 22px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; white-space: nowrap; transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .input-wrap button:hover, .cta-input button:hover {
+      background: var(--accent); color: white; transform: translateY(-2px);
+    }
+    .hero-note { font-size: 12px; color: var(--text-muted); margin-top: 0.75rem; }
+    .success { display: none; font-size: 13px; color: var(--green); font-weight: 500; margin-top: 0.5rem; }
+    .success.show { display: block; }
+
+    /* ---------- MOCKUP ---------- */
+    .mockup-wrap {
+      position: relative; z-index: 2; max-width: 900px;
+      margin: 0 auto; padding: 2rem 2rem 6rem;
+    }
+    .mockup {
+      border: 1px solid var(--border-light); border-radius: 16px;
+      overflow: hidden; background: var(--bg-secondary);
+      backdrop-filter: blur(8px); box-shadow: 0 25px 40px -12px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .mockup:hover { transform: translateY(-6px); box-shadow: 0 35px 50px -15px rgba(0,0,0,0.5); }
+    .mockup-bar {
+      background: var(--bg-tertiary); border-bottom: 1px solid var(--border-light);
+      padding: 0.65rem 1rem; display: flex; align-items: center; gap: 6px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-light); }
+    .mockup-url { font-size: 11px; color: var(--text-muted); margin-left: 8px; font-family: monospace; }
+    .mockup-body { padding: 1.5rem; }
+    .mock-tabs {
+      display: flex; gap: 2px; background: var(--bg-primary);
+      border: 1px solid var(--border-light); border-radius: 9px;
+      padding: 3px; margin-bottom: 1.25rem; width: fit-content;
+    }
+    .mt {
+      padding: 5px 16px; border-radius: 7px; font-size: 12px;
+      font-weight: 500; color: var(--text-secondary); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mt.active { background: var(--bg-tertiary); color: var(--text-primary); }
+    .mt:hover:not(.active) { color: var(--text-primary); background: rgba(115,137,166,0.1); }
+    .mock-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 10px; }
+    .ms {
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      border-radius: 9px; padding: 0.75rem;
+    }
+    .ms-l { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; }
+    .ms-v { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+    .ms-c { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .ms-c.up { color: var(--green); }
+    .mock-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 12px; background: var(--bg-tertiary);
+      border: 1px solid var(--border-light); border-radius: 9px; margin-bottom: 6px;
+    }
+    .mock-stock-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .mock-stock-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .mock-price { font-size: 13px; font-weight: 600; color: var(--text-primary); font-family: monospace; }
+    .chg-up { font-size: 11px; font-weight: 600; color: var(--green); background: rgba(74,222,128,0.1); padding: 3px 9px; border-radius: 99px; }
+    .chg-dn { font-size: 11px; font-weight: 600; color: var(--red); background: rgba(248,113,113,0.1); padding: 3px 9px; border-radius: 99px; }
+    .why-tag { font-size: 10px; color: var(--text-secondary); background: var(--bg-primary); border: 1px solid var(--border-light); padding: 2px 9px; border-radius: 5px; cursor: pointer; }
+    .why-tag:hover { color: var(--text-primary); border-color: var(--border-medium); }
+    .news-item, .fact-item {
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      border-radius: 9px; padding: 10px 12px; margin-bottom: 7px;
+    }
+    .news-tag { font-size: 10px; font-weight: 600; color: var(--text-muted); background: var(--bg-primary); border: 1px solid var(--border-light); padding: 1px 7px; border-radius: 99px; display: inline-block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .news-headline { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.4; margin-bottom: 3px; }
+    .news-meta { font-size: 10px; color: var(--text-muted); }
+    .fact-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+    .fact-text { font-size: 12px; color: var(--text-primary); line-height: 1.5; margin-bottom: 3px; }
+    .fact-source { font-size: 10px; color: var(--text-muted); }
+    .chat-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .chat-msg { display: flex; align-items: flex-start; gap: 7px; }
+    .chat-msg.user { flex-direction: row-reverse; }
+    .chat-av { width: 22px; height: 22px; border-radius: 50%; background: var(--bg-primary); border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0; }
+    .chat-bubble { padding: 7px 10px; border-radius: 10px; font-size: 11px; line-height: 1.5; max-width: 85%; }
+    .chat-msg.bot .chat-bubble { background: var(--bg-tertiary); border: 1px solid var(--border-light); color: #e0e6ea; border-radius: 3px 10px 10px 10px; }
+    .chat-msg.user .chat-bubble { background: var(--text-primary); color: var(--bg-primary); font-weight: 500; border-radius: 10px 3px 10px 10px; }
+    .chat-term { background: rgba(74,222,128,0.15); color: var(--green); padding: 0 4px; border-radius: 3px; }
+    .chat-input-bar { display: flex; align-items: center; gap: 7px; background: var(--bg-tertiary); border: 1px solid var(--border-light); border-radius: 10px; padding: 7px 10px; }
+    .chat-input-text { flex: 1; font-size: 11px; color: var(--text-muted); }
+    .chat-send { width: 20px; height: 20px; border-radius: 50%; background: var(--text-primary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--bg-primary); cursor: pointer; }
+
+    /* ---------- STATS, SECTIONS, CARDS ---------- */
+    .stats-section { position: relative; z-index: 2; padding: 0 2rem 5rem; }
+    .stats-row { display: flex; justify-content: center; gap: 5rem; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-num { font-size: 52px; font-weight: 900; letter-spacing: -2px; color: var(--text-primary); }
+    .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; max-width: 140px; margin-left: auto; margin-right: auto; }
+    .section { position: relative; z-index: 2; padding: 5rem 2rem; text-align: center; max-width: 960px; margin: 0 auto; }
+    .section-label { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.75rem; }
+    h2 { font-size: 52px; font-weight: 800; letter-spacing: -2px; line-height: 1.05; margin-bottom: 0.75rem; color: var(--text-primary); }
+    .section-sub { font-size: 16px; color: var(--text-secondary); line-height: 1.65; max-width: 480px; margin: 0 auto 3rem; }
+    .prob-grid, .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border-light); border: 1px solid var(--border-light); border-radius: 14px; overflow: hidden; text-align: left; }
+    .prob, .feat { background: var(--bg-secondary); padding: 1.75rem; transition: background 0.2s; }
+    .prob:hover, .feat:hover { background: var(--bg-tertiary); }
+    .feat.highlight { background: var(--bg-tertiary); }
+    .prob-num { font-size: 11px; font-weight: 700; color: var(--text-muted); font-family: monospace; margin-bottom: 0.75rem; letter-spacing: 0.3px; }
+    .prob-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 0.4rem; letter-spacing: -0.3px; }
+    .prob-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+    .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 2rem; margin-top: 2.5rem; text-align: left; }
+    .step-num { font-size: 11px; font-weight: 700; color: var(--text-muted); font-family: monospace; margin-bottom: 0.6rem; }
+    .step-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem; letter-spacing: -0.3px; }
+    .step-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    .feat-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--bg-tertiary); border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .feat.highlight .feat-icon { background: var(--bg-primary); border-color: var(--border-medium); }
+    .feat-icon svg { width: 16px; height: 16px; fill: none; stroke: var(--text-secondary); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .feat-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem; letter-spacing: -0.2px; }
+    .feat-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* Comparison Table */
+    .compare-wrap { max-width: 720px; margin: 0 auto; }
+    .ctable-wrap { border: 1px solid var(--border-light); border-radius: 14px; overflow: hidden; background: var(--bg-secondary); }
+    .ctable { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .ctable thead tr { background: var(--bg-tertiary); border-bottom: 1px solid var(--border-light); }
+    .ctable th { padding: 0.85rem 1.5rem; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+    .ctable th:first-child { text-align: left; }
+    .ctable th.ours { color: var(--text-primary); font-size: 13px; text-transform: none; background: rgba(255,255,255,0.03); }
+    .ctable td { padding: 0.85rem 1.5rem; border-bottom: 1px solid var(--border-light); color: var(--text-secondary); text-align: center; }
+    .ctable tr:last-child td { border-bottom: none; }
+    .ctable tr:hover td { background: rgba(255,255,255,0.02); }
+    .ctable td:first-child { text-align: left; color: var(--text-primary); font-weight: 500; }
+    .ctable td.ours-col { background: rgba(255,255,255,0.02); }
+    .ctable .yes { color: var(--green); font-size: 16px; font-weight: 700; }
+    .ctable .no { color: var(--red); font-size: 16px; }
+    .ctable .partial { color: #fb923c; font-size: 13px; font-weight: 500; }
+
+    /* CTA Section */
+    .cta-section { position: relative; z-index: 2; text-align: center; padding: 6rem 2rem 8rem; }
+    .cta-section h2 { font-size: 64px; letter-spacing: -3px; }
+    .cta-sub { font-size: 15px; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 2rem; }
+    .cta-input {
+      display: flex; align-items: center; gap: 8px; max-width: 400px; margin: 0 auto;
+      background: var(--bg-secondary); border: 1px solid var(--border-light);
+      border-radius: 99px; padding: 6px 6px 6px 20px; transition: border-color 0.2s;
+    }
+    .cta-input:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .cta-input input { flex: 1; background: transparent; border: none; outline: none; font-size: 14px; color: var(--text-primary); font-family: inherit; }
+    .cta-input input::placeholder { color: var(--text-muted); }
+    .cta-note { font-size: 12px; color: var(--green); font-weight: 500; margin-top: 0.75rem; min-height: 18px; }
+
+    footer {
+      position: relative; z-index: 2; padding: 2rem 3rem;
+      border-top: 1px solid var(--border-light); display: flex;
+      align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--text-muted);
+    }
+    footer strong { color: var(--text-secondary); }
+    .footer-links { display: flex; gap: 20px; font-size: 12px; color: var(--text-muted); cursor: pointer; }
+    .footer-links span:hover { color: var(--text-primary); }
+
+    /* Fade up animation */
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s cubic-bezier(0.23,1,0.32,1), transform 0.7s cubic-bezier(0.23,1,0.32,1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* Magnetic effect class */
+    .magnetic { transition: transform 0.2s cubic-bezier(0.23,1,0.32,1); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      h1 { font-size: 44px; letter-spacing: -2px; }
+      h2 { font-size: 36px; letter-spacing: -1.5px; }
+      .cta-section h2 { font-size: 40px; }
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 5rem 1.5rem 3rem; }
+      .mock-stats { grid-template-columns: 1fr 1fr; }
+      .prob-grid, .feat-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .stats-row { gap: 2.5rem; }
+      .stat-num { font-size: 40px; }
+      .section { padding: 4rem 1.5rem; }
+      .mockup-wrap { padding: 1rem 1.5rem 4rem; }
+    }
+  </style>
 </head>
 <body>
-<div class="top-bar"></div>
-<div class="grid-bg"></div>
 
-<nav>
-  <div class="nav-logo" onclick="window.location='index.html'">
-    <div class="nav-icon">
-      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-    </div>
-    <span class="nav-name">Simudhan</span>
-  </div>
-  <div class="nav-links">
- <span onclick="window.location='index.html'">Home</span>
- <span onclick="window.location='quiz.html'">Quiz</span>
- <span onclick="window.location='faq.html'">FAQs</span>
- <span onclick="window.location='trade.html'">App</span>
-<span onclick="window.location='contact.html'">Reach Out</span>
-  </div>
-  <button class="nav-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
-</nav>
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-dot"></div>
 
-<section class="hero">
-  <div class="hero-badge">
-    <span class="hero-badge-dot"></span>
-    Now in early access
-  </div>
-  <h1>Invest virtually.<br><span class="dim">Learn for real.</span></h1>
-  <p class="hero-sub">India's first paper trading simulator for teenagers. Real NSE stocks, virtual money, and an explanation for every market move.</p>
-  <div class="hero-actions">
-    <div class="input-wrap" id="waitlist">
-      <input type="email" id="emailInput" placeholder="your@school.com" />
-      <button onclick="joinWaitlist()">Get early access</button>
-    </div>
-  </div>
-  <p class="hero-note"><span id="count">47</span> students waiting · Free forever for students</p>
-  <p class="success" id="success">You're on the list! We'll be in touch.</p>
-</section>
+  <!-- Particle Background -->
+  <canvas id="particle-canvas"></canvas>
+  <div class="grid-bg"></div>
 
-<div class="mockup-wrap">
-  <div class="mockup">
-    <div class="mockup-bar">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-      <span class="mockup-url">simudhan.trade/dashboard</span>
-    </div>
-    <div class="mockup-body">
-      <div class="mock-tabs">
-        <span class="mt active" onclick="switchTab('portfolio',this)">Portfolio</span>
-        <span class="mt" onclick="switchTab('markets',this)">Markets</span>
-        <span class="mt" onclick="switchTab('news',this)">News</span>
-        <span class="mt" onclick="switchTab('discover',this)">Discover</span>
-        <span class="mt" onclick="switchTab('zara',this)">Zara AI</span>
+  <div class="top-bar"></div>
+
+  <nav>
+    <div class="nav-logo magnetic" onclick="window.location='index.html'">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
       </div>
-      <div id="mock-content"></div>
+      <span class="nav-name">Simudhan</span>
     </div>
-  </div>
-</div>
+    <div class="nav-links">
+      <span onclick="window.location='index.html'">Home</span>
+      <span onclick="window.location='quiz.html'">Quiz</span>
+      <span onclick="window.location='faq.html'">FAQs</span>
+      <span onclick="window.location='trade.html'">App</span>
+      <span onclick="window.location='contact.html'">Reach Out</span>
+    </div>
+    <button class="nav-cta magnetic" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
+  </nav>
 
-<section class="stats-section">
-  <div class="stats-row">
-    <div class="stat"><div class="stat-num">3.5%</div><div class="stat-label">of Indians invest in equities</div></div>
-    <div class="stat"><div class="stat-num">₹1L</div><div class="stat-label">virtual cash to start with</div></div>
-    <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Nifty stocks available</div></div>
-    <div class="stat"><div class="stat-num">0₹</div><div class="stat-label">real money ever at risk</div></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="section-label">The problem</div>
-  <h2>Financial education<br><span class="dim">is broken for teens.</span></h2>
-  <p class="section-sub">Only 3.5% of Indians invest in equities. Not because they can't — because nobody taught them how, early enough.</p>
-  <div class="prob-grid">
-    <div class="prob fade-up">
-      <div class="prob-num">01</div>
-      <div class="prob-title">Passive learning</div>
-      <div class="prob-desc">Reading about a P/E ratio is different from watching your portfolio drop because of one. No platform bridges that gap for Indian students.</div>
-    </div>
-    <div class="prob fade-up">
-      <div class="prob-num">02</div>
-      <div class="prob-title">No Indian context</div>
-      <div class="prob-desc">Investopedia uses S&P 500 examples. Indian teenagers need Nifty, HDFC Bank, and Zerodha — not the NYSE. Context makes concepts stick.</div>
-    </div>
-    <div class="prob fade-up">
-      <div class="prob-num">03</div>
-      <div class="prob-title">Too late, too abstract</div>
-      <div class="prob-desc">Most Indians first encounter investing in their 20s, after financial habits are already set. Starting at 16 with zero real risk changes everything.</div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="section-label">How it works</div>
-  <h2>Four steps to thinking<br><span class="dim">like an investor.</span></h2>
-  <div class="steps">
-    <div class="step fade-up">
-      <div class="step-num">01</div>
-      <div class="step-title">Get your capital</div>
-      <div class="step-desc">Start with ₹1,00,000 in virtual cash. Browse real NSE stocks on a 15-minute delay.</div>
-    </div>
-    <div class="step fade-up">
-      <div class="step-num">02</div>
-      <div class="step-title">Build a portfolio</div>
-      <div class="step-desc">Buy and sell across sectors. Watch your decisions play out in real market conditions.</div>
-    </div>
-    <div class="step fade-up">
-      <div class="step-num">03</div>
-      <div class="step-title">Understand every move</div>
-      <div class="step-desc">Every price change explained. Tap any stock that moves to find out exactly why.</div>
-    </div>
-    <div class="step fade-up">
-      <div class="step-num">04</div>
-      <div class="step-title">Compete and level up</div>
-      <div class="step-desc">Daily challenges, school leaderboards, XP points. Beat Nifty. Beat your classmates.</div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="section-label">Features</div>
-  <h2>Everything you need.<br><span class="dim">Nothing you don't.</span></h2>
-  <p class="section-sub">Built for Indian teenagers who want to understand markets before they invest for real.</p>
-  <div class="feat-grid">
-    <div class="feat highlight fade-up">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+  <section class="hero">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>Now in early access</div>
+    <h1>Invest virtually.<br><span class="dim">Learn for real.</span></h1>
+    <p class="hero-sub">India's first paper trading simulator for teenagers. Real NSE stocks, virtual money, and an explanation for every market move.</p>
+    <div class="hero-actions">
+      <div class="input-wrap" id="waitlist">
+        <input type="email" id="emailInput" placeholder="your@school.com" />
+        <button class="magnetic" onclick="joinWaitlist()">Get early access</button>
       </div>
-      <div class="feat-title">Why it fell</div>
-      <div class="feat-desc">Every stock drop explained in plain language. No jargon without a definition. No move without a reason.</div>
     </div>
-    <div class="feat fade-up">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <p class="hero-note"><span id="count">47</span> students waiting · Free forever for students</p>
+    <p class="success" id="success">You're on the list! We'll be in touch.</p>
+  </section>
+
+  <div class="mockup-wrap">
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span class="mockup-url">simudhan.trade/dashboard</span>
       </div>
-      <div class="feat-title">Zara — AI tutor</div>
-      <div class="feat-desc">Ask anything about markets or your portfolio. Zara answers like a patient teacher, not a textbook.</div>
-    </div>
-    <div class="feat fade-up">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <div class="mockup-body">
+        <div class="mock-tabs">
+          <span class="mt active" onclick="switchTab('portfolio',this)">Portfolio</span>
+          <span class="mt" onclick="switchTab('markets',this)">Markets</span>
+          <span class="mt" onclick="switchTab('news',this)">News</span>
+          <span class="mt" onclick="switchTab('discover',this)">Discover</span>
+          <span class="mt" onclick="switchTab('zara',this)">Zara AI</span>
+        </div>
+        <div id="mock-content"></div>
       </div>
-      <div class="feat-title">Daily challenges</div>
-      <div class="feat-desc">Beat Nifty today. Gain 3%. Diversify across three sectors. New challenges every morning.</div>
-    </div>
-    <div class="feat fade-up">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      </div>
-      <div class="feat-title">Tradictionary</div>
-      <div class="feat-desc">Every financial term on screen is clickable. Tap any term for an instant plain-English explanation.</div>
-    </div>
-    <div class="feat fade-up">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      </div>
-      <div class="feat-title">Ethics quizzes</div>
-      <div class="feat-desc">Insider trading, pump and dump, SEBI rules — taught through real market dilemmas.</div>
-    </div>
-    <div class="feat fade-up">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <div class="feat-title">School leaderboard</div>
-      <div class="feat-desc">Compete with classmates on weekly returns. Bragging rights are real even if the money isn't.</div>
     </div>
   </div>
-</section>
 
-<section class="section">
-  <div class="section-label">Comparison</div>
-  <h2>How we're <span class="dim">different.</span></h2>
-  <p class="section-sub">Every other platform assumes you already know. We start from zero.</p>
-  <div class="compare-wrap">
-    <div class="ctable-wrap">
-      <table class="ctable">
-        <thead>
-          <tr>
-            <th style="text-align:left">Feature</th>
-            <th>Investopedia</th>
-            <th>Zerodha Varsity</th>
-            <th class="ours">Simudhan</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Indian market data</td><td class="no">✕</td><td class="yes">✓</td><td class="yes ours-col">✓</td></tr>
-          <tr><td>Paper trading simulator</td><td class="yes">✓</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
-          <tr><td>Explains why stocks move</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
-          <tr><td>Built for teenagers</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
-          <tr><td>AI tutor</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
-          <tr><td>Daily challenges</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
-          <tr><td>Ethics & SEBI education</td><td class="no">✕</td><td class="partial">Partial</td><td class="yes ours-col">✓</td></tr>
-        </tbody>
-      </table>
+  <section class="stats-section">
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">3.5%</div><div class="stat-label">of Indians invest in equities</div></div>
+      <div class="stat"><div class="stat-num">₹1L</div><div class="stat-label">virtual cash to start with</div></div>
+      <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Nifty stocks available</div></div>
+      <div class="stat"><div class="stat-num">0₹</div><div class="stat-label">real money ever at risk</div></div>
     </div>
-  </div>
-</section>
+  </section>
 
+  <section class="section">
+    <div class="section-label">The problem</div>
+    <h2>Financial education<br><span class="dim">is broken for teens.</span></h2>
+    <p class="section-sub">Only 3.5% of Indians invest in equities. Not because they can't — because nobody taught them how, early enough.</p>
+    <div class="prob-grid">
+      <div class="prob fade-up"><div class="prob-num">01</div><div class="prob-title">Passive learning</div><div class="prob-desc">Reading about a P/E ratio is different from watching your portfolio drop because of one. No platform bridges that gap for Indian students.</div></div>
+      <div class="prob fade-up"><div class="prob-num">02</div><div class="prob-title">No Indian context</div><div class="prob-desc">Investopedia uses S&P 500 examples. Indian teenagers need Nifty, HDFC Bank, and Zerodha — not the NYSE. Context makes concepts stick.</div></div>
+      <div class="prob fade-up"><div class="prob-num">03</div><div class="prob-title">Too late, too abstract</div><div class="prob-desc">Most Indians first encounter investing in their 20s, after financial habits are already set. Starting at 16 with zero real risk changes everything.</div></div>
+    </div>
+  </section>
 
-<section class="cta-section">
-  <h2>Be first<br><span class="dim">in your school.</span></h2>
-  <p class="cta-sub">Launching 2026. Free forever for students. Limited beta spots available.</p>
-  <div class="cta-input">
-    <input type="email" id="ctaEmail" placeholder="your@school.com" />
-    <button onclick="ctaJoin()">Join waitlist</button>
-  </div>
-  <p class="cta-note" id="ctaNote"></p>
-</section>
+  <section class="section">
+    <div class="section-label">How it works</div>
+    <h2>Four steps to thinking<br><span class="dim">like an investor.</span></h2>
+    <div class="steps">
+      <div class="step fade-up"><div class="step-num">01</div><div class="step-title">Get your capital</div><div class="step-desc">Start with ₹1,00,000 in virtual cash. Browse real NSE stocks on a 15-minute delay.</div></div>
+      <div class="step fade-up"><div class="step-num">02</div><div class="step-title">Build a portfolio</div><div class="step-desc">Buy and sell across sectors. Watch your decisions play out in real market conditions.</div></div>
+      <div class="step fade-up"><div class="step-num">03</div><div class="step-title">Understand every move</div><div class="step-desc">Every price change explained. Tap any stock that moves to find out exactly why.</div></div>
+      <div class="step fade-up"><div class="step-num">04</div><div class="step-title">Compete and level up</div><div class="step-desc">Daily challenges, school leaderboards, XP points. Beat Nifty. Beat your classmates.</div></div>
+    </div>
+  </section>
 
-<footer>
-  <span>Built by <strong>Aishwarya Jha</strong></span>
-  <div class="footer-links">
-    <span onclick="window.location='FAQ.html'">FAQ</span>
-    <span onclick="window.location='quiz.html'">Quiz</span>
-    <span onclick="window.location='trade.html'">App</span>
-  </div>
-  <span>simudhan.trade · 2026</span>
-</footer>
+  <section class="section">
+    <div class="section-label">Features</div>
+    <h2>Everything you need.<br><span class="dim">Nothing you don't.</span></h2>
+    <p class="section-sub">Built for Indian teenagers who want to understand markets before they invest for real.</p>
+    <div class="feat-grid">
+      <div class="feat highlight fade-up"><div class="feat-icon"><svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg></div><div class="feat-title">Why it fell</div><div class="feat-desc">Every stock drop explained in plain language. No jargon without a definition. No move without a reason.</div></div>
+      <div class="feat fade-up"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="feat-title">Zara — AI tutor</div><div class="feat-desc">Ask anything about markets or your portfolio. Zara answers like a patient teacher, not a textbook.</div></div>
+      <div class="feat fade-up"><div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="feat-title">Daily challenges</div><div class="feat-desc">Beat Nifty today. Gain 3%. Diversify across three sectors. New challenges every morning.</div></div>
+      <div class="feat fade-up"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="feat-title">Tradictionary</div><div class="feat-desc">Every financial term on screen is clickable. Tap any term for an instant plain-English explanation.</div></div>
+      <div class="feat fade-up"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="feat-title">Ethics quizzes</div><div class="feat-desc">Insider trading, pump and dump, SEBI rules — taught through real market dilemmas.</div></div>
+      <div class="feat fade-up"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="feat-title">School leaderboard</div><div class="feat-desc">Compete with classmates on weekly returns. Bragging rights are real even if the money isn't.</div></div>
+    </div>
+  </section>
 
-<script src="script.js"></script>
+  <section class="section">
+    <div class="section-label">Comparison</div>
+    <h2>How we're <span class="dim">different.</span></h2>
+    <p class="section-sub">Every other platform assumes you already know. We start from zero.</p>
+    <div class="compare-wrap">
+      <div class="ctable-wrap">
+        <table class="ctable">
+          <thead><tr><th style="text-align:left">Feature</th><th>Investopedia</th><th>Zerodha Varsity</th><th class="ours">Simudhan</th></tr></thead>
+          <tbody>
+            <tr><td>Indian market data</td><td class="no">✕</td><td class="yes">✓</td><td class="yes ours-col">✓</td></tr>
+            <tr><td>Paper trading simulator</td><td class="yes">✓</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+            <tr><td>Explains why stocks move</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+            <tr><td>Built for teenagers</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+            <tr><td>AI tutor</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+            <tr><td>Daily challenges</td><td class="no">✕</td><td class="no">✕</td><td class="yes ours-col">✓</td></tr>
+            <tr><td>Ethics & SEBI education</td><td class="no">✕</td><td class="partial">Partial</td><td class="yes ours-col">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Be first<br><span class="dim">in your school.</span></h2>
+    <p class="cta-sub">Launching 2026. Free forever for students. Limited beta spots available.</p>
+    <div class="cta-input">
+      <input type="email" id="ctaEmail" placeholder="your@school.com" />
+      <button class="magnetic" onclick="ctaJoin()">Join waitlist</button>
+    </div>
+    <p class="cta-note" id="ctaNote"></p>
+  </section>
+
+  <footer>
+    <span>Built by <strong>Aishwarya Jha</strong></span>
+    <div class="footer-links">
+      <span onclick="window.location='FAQ.html'">FAQ</span>
+      <span onclick="window.location='quiz.html'">Quiz</span>
+      <span onclick="window.location='trade.html'">App</span>
+    </div>
+    <span>simudhan.trade · 2026</span>
+  </footer>
+
+  <script>
+    (function(){
+      "use strict";
+
+      // ---------- CUSTOM CURSOR ----------
+      const cursor = document.querySelector('.cursor');
+      const cursorDot = document.querySelector('.cursor-dot');
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+      });
+      // Magnetic hover effect for elements with class 'magnetic'
+      const magnets = document.querySelectorAll('.magnetic');
+      magnets.forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursorDot.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); cursorDot.classList.remove('hover'); });
+      });
+
+      // ---------- PARTICLE NETWORK (INTERACTIVE) ----------
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+      const particleCount = 70;
+      const connectionDistance = 140;
+      let mouse = { x: null, y: null, radius: 100 };
+
+      function initCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            size: Math.random() * 2.2 + 1
+          });
+        }
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > width) p.vx *= -1;
+          if (p.y < 0 || p.y > height) p.vy *= -1;
+          if (mouse.x && mouse.y) {
+            let dx = p.x - mouse.x;
+            let dy = p.y - mouse.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < mouse.radius) {
+              let force = (mouse.radius - dist) / mouse.radius;
+              let angle = Math.atan2(dy, dx);
+              p.x += Math.cos(angle) * force * 5;
+              p.y += Math.sin(angle) * force * 5;
+            }
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+          ctx.fillStyle = '#7389A6';
+          ctx.shadowColor = '#7F788E';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+        });
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#5B5968';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i+1; j < particles.length; j++) {
+            let dx = particles[i].x - particles[j].x;
+            let dy = particles[i].y - particles[j].y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < connectionDistance) {
+              ctx.globalAlpha = 1 - dist/connectionDistance;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(drawParticles);
+      }
+
+      window.addEventListener('resize', initCanvas);
+      document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+      document.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+      initCanvas();
+      drawParticles();
+
+      // ---------- MOCK CONTENT & TABS ----------
+      const MOCK_CONTENT = {
+        portfolio: `
+          <div class="mock-stats">
+            <div class="ms"><div class="ms-l">Portfolio</div><div class="ms-v">₹1,08,420</div><div class="ms-c up">+8.42% total</div></div>
+            <div class="ms"><div class="ms-l">Cash</div><div class="ms-v">₹42,180</div><div class="ms-c">available</div></div>
+            <div class="ms"><div class="ms-l">Today</div><div class="ms-v">+₹1,240</div><div class="ms-c up">4 holdings</div></div>
+            <div class="ms"><div class="ms-l">Streak</div><div class="ms-v">7 days</div><div class="ms-c">Level 5</div></div>
+          </div>
+          <div class="mock-row"><div><div class="mock-stock-name">Reliance Industries</div><div class="mock-stock-sub">RELIANCE · Energy</div></div><div class="mock-price">₹2,847</div><span class="chg-up">+1.2%</span><span class="why-tag">—</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">Tata Consultancy</div><div class="mock-stock-sub">TCS · IT</div></div><div class="mock-price">₹3,542</div><span class="chg-dn">-2.8%</span><span class="why-tag">Why it fell</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">HDFC Bank</div><div class="mock-stock-sub">HDFCBANK · Banking</div></div><div class="mock-price">₹1,712</div><span class="chg-up">+0.8%</span><span class="why-tag">—</span></div>
+        `,
+        markets: `
+          <div class="mock-stats">
+            <div class="ms"><div class="ms-l">Nifty 50</div><div class="ms-v">24,218</div><div class="ms-c up">+0.84%</div></div>
+            <div class="ms"><div class="ms-l">Sensex</div><div class="ms-v">79,943</div><div class="ms-c up">+0.77%</div></div>
+            <div class="ms"><div class="ms-l">India VIX</div><div class="ms-v">13.42</div><div class="ms-c">calm</div></div>
+            <div class="ms"><div class="ms-l">USD/INR</div><div class="ms-v">84.32</div><div class="ms-c">+0.14%</div></div>
+          </div>
+          <div class="mock-row"><div><div class="mock-stock-name">Reliance Industries</div><div class="mock-stock-sub">RELIANCE · Energy</div></div><div class="mock-price">₹2,847</div><span class="chg-up">+1.2%</span><span class="why-tag">Why it rose</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">Tata Consultancy</div><div class="mock-stock-sub">TCS · IT</div></div><div class="mock-price">₹3,542</div><span class="chg-dn">-2.8%</span><span class="why-tag">Why it fell</span></div>
+          <div class="mock-row"><div><div class="mock-stock-name">Tata Motors</div><div class="mock-stock-sub">TATAMOTORS · Auto</div></div><div class="mock-price">₹924</div><span class="chg-up">+2.1%</span><span class="why-tag">Why it rose</span></div>
+        `,
+        news: `
+          <div class="news-item"><div class="news-tag">Results</div><div class="news-headline">TCS Q3: Revenue misses estimates by ₹1,027 crore — stock falls 2.8%</div><div class="news-meta">ET Markets · 2h ago</div></div>
+          <div class="news-item"><div class="news-tag">RBI</div><div class="news-headline">RBI holds repo rate at 6.5% — signals February cut if inflation cools</div><div class="news-meta">Mint · 4h ago</div></div>
+          <div class="news-item"><div class="news-tag">FII</div><div class="news-headline">FIIs net sell ₹4,200 crore — DIIs absorb with ₹3,800 crore buying</div><div class="news-meta">CNBC TV18 · 6h ago</div></div>
+          <div class="news-item"><div class="news-tag">IPO</div><div class="news-headline">HDB Financial Services IPO subscribed 16.3x on final day</div><div class="news-meta">Moneycontrol · 8h ago</div></div>
+        `,
+        discover: `
+          <div class="fact-item"><div class="fact-label">Fact of the day</div><div class="fact-text">The BSE, founded in 1875 under a banyan tree in Mumbai, is Asia's oldest stock exchange. It now lists over 5,500 companies.</div><div class="fact-source">Source: BSE India</div></div>
+          <div class="fact-item"><div class="fact-label">Did you know?</div><div class="fact-text">₹1 lakh invested in Nifty 50 at its 1996 launch would be worth over ₹25 lakh today — a 25x return without picking a single stock.</div><div class="fact-source">Source: NSE India</div></div>
+          <div class="fact-item"><div class="fact-label">Investor wisdom</div><div class="fact-text">Warren Buffett bought his first stock at age 11. He says his biggest mistake was waiting that long.</div><div class="fact-source">Source: Berkshire Hathaway</div></div>
+        `,
+        zara: `
+          <div class="chat-wrap">
+            <div class="chat-msg bot"><div class="chat-av">Z</div><div class="chat-bubble">Hi! I'm Zara. Ask me anything about markets, your portfolio, or any term you don't understand!</div></div>
+            <div class="chat-msg user"><div class="chat-bubble">Why did TCS fall today?</div><div class="chat-av">R</div></div>
+            <div class="chat-msg bot"><div class="chat-av">Z</div><div class="chat-bubble">TCS fell 2.8% because it missed revenue estimates by ₹1,027 crore — this is called an <span class="chat-term">earnings miss</span>. FIIs sold ₹2,100 crore of TCS shares on the day.</div></div>
+            <div class="chat-msg user"><div class="chat-bubble">What is FII?</div><div class="chat-av">R</div></div>
+            <div class="chat-msg bot"><div class="chat-av">Z</div><div class="chat-bubble">FII stands for Foreign Institutional Investor — large overseas funds that invest in Indian markets. When they sell heavily, it can drag the whole market down!</div></div>
+          </div>
+          <div class="chat-input-bar"><div class="chat-input-text">Ask Zara anything...</div><div class="chat-send">↑</div></div>
+        `
+      };
+
+      window.switchTab = function(tab, el) {
+        document.querySelectorAll('.mt').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('mock-content').innerHTML = MOCK_CONTENT[tab];
+      };
+      document.getElementById('mock-content').innerHTML = MOCK_CONTENT.portfolio;
+
+      // ---------- WAITLIST ----------
+      window.joinWaitlist = function() {
+        const email = document.getElementById('emailInput').value.trim();
+        if (!email || !email.includes('@')) return;
+        document.getElementById('emailInput').value = '';
+        document.getElementById('success').classList.add('show');
+        const countSpan = document.getElementById('count');
+        countSpan.textContent = parseInt(countSpan.textContent) + 1;
+      };
+      window.ctaJoin = function() {
+        const email = document.getElementById('ctaEmail').value.trim();
+        if (!email || !email.includes('@')) return;
+        document.getElementById('ctaEmail').value = '';
+        document.getElementById('ctaNote').textContent = "You're on the list!";
+        const countSpan = document.getElementById('count');
+        countSpan.textContent = parseInt(countSpan.textContent) + 1;
+      };
+
+      // ---------- FADE-UP OBSERVER ----------
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    })();
+  </script>
 </body>
 </html>

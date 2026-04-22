@@ -4,67 +4,635 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz — Simudhan</title>
-  <link rel="stylesheet" href="shared.css">
-  <link rel="stylesheet" href="quiz.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- COLORMIND PALETTE (same as index) ---------- */
+    :root {
+      --bg-primary: #272E3A;
+      --bg-secondary: #1F2530;
+      --bg-tertiary: #2C3442;
+      --border-light: #3A4453;
+      --border-medium: #5B5968;
+      --text-primary: #D5DEE3;
+      --text-secondary: #7389A6;
+      --text-muted: #7F788E;
+      --accent: #7389A6;
+      --accent-glow: rgba(115, 137, 166, 0.25);
+      --green: #4ade80;
+      --red: #f87171;
+      --gradient-shimmer: linear-gradient(90deg, #7389A6, #7F788E, #5B5968, #7389A6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ---------- CUSTOM CURSOR ---------- */
+    .cursor {
+      width: 24px; height: 24px;
+      border: 2px solid var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.15s ease, width 0.2s, height 0.2s, background 0.2s;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.2s;
+    }
+    .cursor.hover {
+      width: 54px; height: 54px;
+      background: rgba(213, 222, 227, 0.08);
+      border-color: var(--accent);
+      mix-blend-mode: normal;
+    }
+    .cursor-dot.hover { opacity: 0; }
+
+    /* ---------- PARTICLE BACKGROUND ---------- */
+    #particle-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: 
+        linear-gradient(rgba(213,222,227,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(213,222,227,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ---------- TOP BAR & NAV ---------- */
+    .top-bar {
+      height: 3px;
+      background: var(--gradient-shimmer);
+      background-size: 300% 100%;
+      animation: shimmer 4s linear infinite;
+      position: relative;
+      z-index: 100;
+    }
+    @keyframes shimmer { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 3rem;
+      border-bottom: 1px solid var(--border-light);
+      background: rgba(39, 46, 58, 0.8);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+    .nav-icon {
+      width: 28px; height: 28px; background: var(--text-primary);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-icon svg { width: 14px; height: 14px; fill: none; stroke: var(--bg-primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-secondary); cursor: pointer; align-items: center; }
+    .nav-links span, .nav-links a {
+      color: var(--text-secondary); text-decoration: none; transition: color 0.2s, transform 0.2s;
+    }
+    .nav-links a.active { color: var(--text-primary); font-weight: 600; }
+    .nav-links span:hover, .nav-links a:hover { color: var(--text-primary); transform: translateY(-1px); }
+    .nav-cta {
+      background: var(--text-primary); color: var(--bg-primary);
+      border: none; border-radius: 99px; padding: 9px 22px;
+      font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none;
+      transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .nav-cta:hover { background: var(--accent); color: white; transform: scale(1.02); }
+
+    /* ---------- PAGE HERO ---------- */
+    .page-hero {
+      position: relative; z-index: 2;
+      text-align: center; padding: 6rem 2rem 3rem;
+      max-width: 800px; margin: 0 auto;
+    }
+    .eyebrow {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .eyebrow-line {
+      width: 40px; height: 1px; background: var(--border-medium);
+    }
+    .eyebrow span {
+      font-size: 11px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    h1 {
+      font-size: 64px; font-weight: 900; line-height: 1.05;
+      letter-spacing: -3px; margin-bottom: 1.5rem; color: var(--text-primary);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .dim { color: var(--text-muted); }
+    .page-sub {
+      font-size: 18px; color: var(--text-secondary); line-height: 1.65;
+      max-width: 500px; margin: 0 auto;
+    }
+
+    /* ---------- QUIZ CONTAINER ---------- */
+    .quiz-wrap {
+      max-width: 700px; margin: 0 auto; padding: 2rem 2rem 5rem;
+      position: relative; z-index: 2;
+    }
+    .progress-bar {
+      height: 3px; background: var(--border-light); border-radius: 99px;
+      margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent); border-radius: 99px;
+      width: 0%; transition: width 0.5s cubic-bezier(0.23,1,0.32,1);
+    }
+    .quiz-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .q-counter { font-size: 13px; color: var(--text-muted); font-family: monospace; font-weight: 500; }
+    .q-type {
+      font-size: 11px; font-weight: 600; color: var(--text-secondary);
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      padding: 4px 14px; border-radius: 99px; text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .q-score { font-size: 13px; font-weight: 600; color: var(--text-secondary); font-family: monospace; }
+
+    /* Question Card */
+    .qcard {
+      background: var(--bg-secondary); border: 1px solid var(--border-light);
+      border-radius: 20px; padding: 2rem;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .qcard:hover { box-shadow: 0 25px 45px -12px rgba(0,0,0,0.4); }
+    .scenario {
+      background: var(--bg-tertiary); border-left: 3px solid var(--accent);
+      padding: 1rem 1.2rem; border-radius: 12px;
+      font-size: 14px; color: var(--text-secondary);
+      line-height: 1.6; margin-bottom: 1.8rem; font-style: italic;
+    }
+    .question {
+      font-size: 20px; font-weight: 700; letter-spacing: -0.4px;
+      line-height: 1.4; margin-bottom: 2rem; color: var(--text-primary);
+    }
+    .options {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .opt {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 18px; border: 1.5px solid var(--border-light);
+      border-radius: 14px; cursor: pointer; background: var(--bg-primary);
+      width: 100%; text-align: left; font-family: inherit;
+      transition: all 0.2s cubic-bezier(0.23,1,0.32,1);
+    }
+    .opt:hover:not([disabled]) {
+      border-color: var(--accent); background: var(--bg-tertiary);
+      transform: translateX(6px);
+    }
+    .opt[disabled] { cursor: default; opacity: 0.8; }
+    .opt.correct {
+      border-color: var(--green); background: rgba(74, 222, 128, 0.08);
+    }
+    .opt.wrong {
+      border-color: var(--red); background: rgba(248, 113, 113, 0.06);
+    }
+    .opt-letter {
+      width: 28px; height: 28px; border-radius: 9px;
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--text-secondary);
+      flex-shrink: 0; transition: all 0.2s;
+    }
+    .opt.correct .opt-letter {
+      background: rgba(74, 222, 128, 0.2); border-color: var(--green);
+      color: var(--green);
+    }
+    .opt.wrong .opt-letter {
+      background: rgba(248, 113, 113, 0.15); border-color: var(--red);
+      color: var(--red);
+    }
+    .opt-text { font-size: 15px; color: var(--text-primary); line-height: 1.5; }
+    .opt.correct .opt-text { color: var(--green); }
+    .opt.wrong .opt-text { color: var(--red); }
+
+    /* Explanation box */
+    .explain {
+      display: none; margin-top: 1.5rem; padding: 1.2rem;
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      border-radius: 14px;
+    }
+    .explain.show { display: block; animation: fadeSlide 0.3s ease; }
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .explain-label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 0.5rem;
+    }
+    .explain-text { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+    /* Quiz footer */
+    .quiz-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 1.2rem; min-height: 44px;
+    }
+    .hint {
+      font-size: 13px; color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .hint.correct { color: var(--green); font-weight: 500; }
+    .hint.wrong { color: var(--red); }
+    .btn-next {
+      background: var(--accent); color: white; border: none;
+      border-radius: 99px; padding: 12px 28px; font-size: 14px;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s, background 0.2s;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+    .btn-next.show {
+      opacity: 1; pointer-events: all;
+    }
+    .btn-next:hover {
+      background: var(--text-primary); color: var(--bg-primary);
+      transform: scale(1.03);
+    }
+
+    /* Result Screen */
+    .result {
+      display: none; text-align: center;
+      border: 1px solid var(--border-light); border-radius: 24px;
+      padding: 3rem 2rem; background: var(--bg-secondary);
+      backdrop-filter: blur(8px); box-shadow: 0 30px 45px -15px rgba(0,0,0,0.4);
+      animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .result-score {
+      font-size: 88px; font-weight: 900; letter-spacing: -4px;
+      line-height: 1; color: var(--text-primary);
+    }
+    .result-label {
+      font-size: 16px; color: var(--text-secondary);
+      margin: 1rem 0 2rem;
+    }
+    .result-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+      margin-bottom: 2.5rem;
+    }
+    .rg {
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      border-radius: 14px; padding: 1.2rem;
+    }
+    .rg-v {
+      font-size: 28px; font-weight: 900; letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+    .rg-l { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+    .btn-retry {
+      background: var(--accent); color: white; border: none;
+      border-radius: 99px; padding: 14px 32px; font-size: 15px;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: all 0.2s; box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+    }
+    .btn-retry:hover {
+      background: var(--text-primary); color: var(--bg-primary);
+      transform: translateY(-2px);
+    }
+
+    /* Magnetic class for buttons */
+    .magnetic { transition: transform 0.2s cubic-bezier(0.23,1,0.32,1); }
+
+    /* Footer */
+    footer {
+      position: relative; z-index: 2; padding: 2rem 3rem;
+      border-top: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--text-muted);
+    }
+    footer strong { color: var(--text-secondary); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--text-primary); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      h1 { font-size: 42px; letter-spacing: -2px; }
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-hero { padding: 4rem 1.5rem 2rem; }
+      .quiz-wrap { padding: 1rem 1.5rem 4rem; }
+      .qcard { padding: 1.5rem; }
+      .question { font-size: 18px; }
+      .result-score { font-size: 64px; }
+    }
+  </style>
 </head>
 <body>
-<div class="top-bar"></div>
-<div class="grid-bg"></div>
 
-<nav>
-  <div class="nav-logo" onclick="window.location='index.html'">
-    <div class="nav-icon">
-      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-dot"></div>
+
+  <!-- Particle Canvas -->
+  <canvas id="particle-canvas"></canvas>
+  <div class="grid-bg"></div>
+
+  <div class="top-bar"></div>
+
+  <nav>
+    <div class="nav-logo magnetic" onclick="window.location='index.html'">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      </div>
+      <span class="nav-name">Simudhan</span>
     </div>
-    <span class="nav-name">Simudhan</span>
-  </div>
-  <div class="nav-links">
-     <span onclick="window.location='index.html'">Home</span>
-     <a href="quiz.html" class="active">Quiz</a>
-     <span onclick="window.location='faq.html'">FAQs</span>
+    <div class="nav-links">
+      <span onclick="window.location='index.html'">Home</span>
+      <a href="quiz.html" class="active">Quiz</a>
+      <span onclick="window.location='faq.html'">FAQs</span>
       <span onclick="window.location='trade.html'">App</span>
       <span onclick="window.location='contact.html'">Reach Out</span>
     </div>
-  <a href="index.html#waitlist" class="nav-cta">Join waitlist</a>
-</nav>
+    <a href="index.html#waitlist" class="nav-cta magnetic">Join waitlist</a>
+  </nav>
 
-<div class="page-hero">
-  <div class="eyebrow"><div class="eyebrow-line"></div><span>Sample quiz</span></div>
-  <h1>How much do you<br><span class="dim">actually know?</span></h1>
-  <p class="page-sub">6 questions. Market knowledge, ethics, and real-world scenarios. No prior knowledge needed.</p>
-</div>
-
-<div class="quiz-wrap">
-  <div class="progress-bar"><div class="progress-fill" id="fill" style="width:0%"></div></div>
-  <div class="quiz-meta">
-    <span class="q-counter" id="counter">Question 1 of 6</span>
-    <span class="q-type" id="qtype">Knowledge</span>
-    <span class="q-score" id="qscore">Score: 0</span>
+  <div class="page-hero">
+    <div class="eyebrow"><div class="eyebrow-line"></div><span>Test your knowledge</span><div class="eyebrow-line"></div></div>
+    <h1>How much do you<br><span class="dim">actually know?</span></h1>
+    <p class="page-sub">6 questions. Market knowledge, ethics, and real-world scenarios. No prior knowledge needed.</p>
   </div>
-  <div id="qzone"></div>
-  <div class="result" id="result">
-    <div class="result-score" id="rscore"></div>
-    <div class="result-label" id="rlabel"></div>
-    <div class="result-grid">
-      <div class="rg"><div class="rg-v" id="rc">0</div><div class="rg-l">Correct</div></div>
-      <div class="rg"><div class="rg-v" id="rw">0</div><div class="rg-l">Wrong</div></div>
-      <div class="rg"><div class="rg-v" id="rp">0%</div><div class="rg-l">Score</div></div>
+
+  <div class="quiz-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="fill" style="width:0%"></div></div>
+    <div class="quiz-meta">
+      <span class="q-counter" id="counter">Question 1 of 6</span>
+      <span class="q-type" id="qtype">Knowledge</span>
+      <span class="q-score" id="qscore">Score: 0</span>
     </div>
-    <button class="btn-retry" onclick="init()">Try again</button>
+    <div id="qzone"></div>
+    <div class="result" id="result">
+      <div class="result-score" id="rscore">0/6</div>
+      <div class="result-label" id="rlabel">Keep going — every expert started here!</div>
+      <div class="result-grid">
+        <div class="rg"><div class="rg-v" id="rc">0</div><div class="rg-l">Correct</div></div>
+        <div class="rg"><div class="rg-v" id="rw">0</div><div class="rg-l">Wrong</div></div>
+        <div class="rg"><div class="rg-v" id="rp">0%</div><div class="rg-l">Score</div></div>
+      </div>
+      <button class="btn-retry magnetic" onclick="init()">Try again</button>
+    </div>
   </div>
-</div>
 
-<footer>
-  <span>Built by <strong>Aishwarya Jha</strong></span>
-  <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="FAQ.html">FAQ</a>
-    <a href="trade.html">App</a>
-    <a href="contact.html">Contact</a>
-  </div>
-  <span>simudhan.trade · 2026</span>
-</footer>
+  <footer>
+    <span>Built by <strong>Aishwarya Jha</strong></span>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="faq.html">FAQ</a>
+      <a href="trade.html">App</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <span>simudhan.trade · 2026</span>
+  </footer>
 
-<script src="quiz.js"></script>
+  <script>
+    (function(){
+      "use strict";
+
+      // ---------- CUSTOM CURSOR & PARTICLES (same as index) ----------
+      const cursor = document.querySelector('.cursor');
+      const cursorDot = document.querySelector('.cursor-dot');
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+      });
+      const magnets = document.querySelectorAll('.magnetic');
+      magnets.forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursorDot.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); cursorDot.classList.remove('hover'); });
+      });
+
+      // Particle Network
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+      const particleCount = 60;
+      const connectionDistance = 140;
+      let mouse = { x: null, y: null, radius: 100 };
+
+      function initCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            size: Math.random() * 2.2 + 1
+          });
+        }
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > width) p.vx *= -1;
+          if (p.y < 0 || p.y > height) p.vy *= -1;
+          if (mouse.x && mouse.y) {
+            let dx = p.x - mouse.x;
+            let dy = p.y - mouse.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < mouse.radius) {
+              let force = (mouse.radius - dist) / mouse.radius;
+              let angle = Math.atan2(dy, dx);
+              p.x += Math.cos(angle) * force * 5;
+              p.y += Math.sin(angle) * force * 5;
+            }
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+          ctx.fillStyle = '#7389A6';
+          ctx.shadowColor = '#7F788E';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+        });
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#5B5968';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i+1; j < particles.length; j++) {
+            let dx = particles[i].x - particles[j].x;
+            let dy = particles[i].y - particles[j].y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < connectionDistance) {
+              ctx.globalAlpha = 1 - dist/connectionDistance;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(drawParticles);
+      }
+
+      window.addEventListener('resize', initCanvas);
+      document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+      document.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+      initCanvas();
+      drawParticles();
+
+      // ---------- QUIZ LOGIC (unchanged, just adapted variable names) ----------
+      const QS = [
+        {type:"Knowledge",q:"What does the Nifty 50 represent?",opts:["The 50 richest people in India","An index of India's 50 largest listed companies","The top 50 mutual funds in India","The 50 stocks that rose most this year"],c:1,ex:"The Nifty 50 is a stock market index of India's 50 largest listed companies by free-float market cap. When people say 'the market is up today', they usually mean Nifty is up."},
+        {type:"Ethics",q:"Your cousin tells you their pharma company is about to announce a major drug approval. Should you buy the stock before the news?",sc:"The stock is at Rs 450. You think it could jump to Rs 600 once the announcement is public.",opts:["Yes — it's just family sharing info","No — this is insider trading and illegal","Yes, but only a small amount","Ask your cousin to buy it instead"],c:1,ex:"Using non-public information to trade is called insider trading. It's illegal under SEBI regulations regardless of how you got the info — even casually over dinner."},
+        {type:"True or False",q:"A high P/E ratio always means a stock is overpriced and you should avoid it.",opts:["True — high P/E always means overpriced","False — P/E must be understood in context"],c:1,ex:"False. A high P/E means investors expect strong future growth. Always compare P/E to the company's growth rate and sector peers — never in isolation."},
+        {type:"Scenario",q:"You bought TCS at Rs 3,600. Today it fell 3% after missing earnings estimates. What is the most rational response?",sc:"TCS reported less revenue than expected. Your friend says sell before it falls more.",opts:["Sell immediately to cut losses","Panic and sell your whole portfolio","Research why it fell then decide based on long-term outlook","Buy more because it is cheaper now"],c:2,ex:"Understand before you act. One earnings miss does not mean a company is finished. Panic selling on short-term moves is one of the most common and costly investor mistakes."},
+        {type:"Knowledge",q:"What does SEBI do?",opts:["Manages stock prices daily","Regulates capital markets and protects investors","Handles mutual fund investments","Sets India's interest rates"],c:1,ex:"SEBI is the Securities and Exchange Board of India. It regulates capital markets, investigates fraud and insider trading, and protects retail investors. The RBI handles banks — SEBI handles markets."},
+        {type:"Ethics",q:"An influencer posts that a small-cap stock will 10x guaranteed. The stock already rose 40% before the post. What is likely happening?",sc:"After the post, thousands of followers buy in and the stock jumps another 20% in one day.",opts:["The influencer found a great investment","This is likely a pump and dump scheme","The stock is genuinely undervalued","Normal market behaviour"],c:1,ex:"This is a classic pump and dump. Someone buys cheap, hypes it to drive the price up, then sells at the peak leaving followers with a crashing stock. Illegal under SEBI regulations."}
+      ];
+
+      let cur = 0, score = 0, done = false;
+
+      window.init = function() {
+        cur = 0; score = 0; done = false;
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('fill').style.width = '0%';
+        document.getElementById('qscore').textContent = 'Score: 0';
+        render();
+      };
+
+      function render() {
+        if (cur >= QS.length) { showResult(); return; }
+        const q = QS[cur];
+        done = false;
+        document.getElementById('counter').textContent = `Question ${cur+1} of ${QS.length}`;
+        document.getElementById('qtype').textContent = q.type;
+        document.getElementById('fill').style.width = `${(cur / QS.length) * 100}%`;
+        const letters = ['A','B','C','D'];
+        let optsHtml = '';
+        for (let i = 0; i < q.opts.length; i++) {
+          optsHtml += `<button class="opt" id="o${i}" onclick="pick(${i})">`;
+          optsHtml += `<div class="opt-letter">${letters[i]}</div>`;
+          optsHtml += `<div class="opt-text">${q.opts[i]}</div></button>`;
+        }
+        let html = '<div class="qcard">';
+        if (q.sc) html += `<div class="scenario">${q.sc}</div>`;
+        html += `<div class="question">${q.q}</div>`;
+        html += `<div class="options">${optsHtml}</div>`;
+        html += `<div class="explain" id="ex"><div class="explain-label">Explanation</div><div class="explain-text">${q.ex}</div></div>`;
+        html += '</div><div class="quiz-footer"><span class="hint" id="hint">Select an answer to continue</span>';
+        html += `<button class="btn-next" id="nxt" onclick="next()">${cur === QS.length-1 ? 'See results' : 'Next question'}</button></div>`;
+        document.getElementById('qzone').innerHTML = html;
+      }
+
+      window.pick = function(i) {
+        if (done) return;
+        done = true;
+        const q = QS[cur];
+        for (let j = 0; j < q.opts.length; j++) {
+          document.getElementById(`o${j}`).setAttribute('disabled', 'true');
+        }
+        const hint = document.getElementById('hint');
+        if (i === q.c) {
+          document.getElementById(`o${i}`).classList.add('correct');
+          score++;
+          hint.textContent = '✓ Correct!';
+          hint.className = 'hint correct';
+          document.getElementById('qscore').textContent = `Score: ${score}`;
+        } else {
+          document.getElementById(`o${i}`).classList.add('wrong');
+          document.getElementById(`o${q.c}`).classList.add('correct');
+          hint.textContent = '✗ Not quite — see explanation';
+          hint.className = 'hint wrong';
+        }
+        document.getElementById('ex').classList.add('show');
+        document.getElementById('nxt').classList.add('show');
+      };
+
+      window.next = function() {
+        cur++;
+        render();
+      };
+
+      function showResult() {
+        document.getElementById('qzone').innerHTML = '';
+        document.getElementById('fill').style.width = '100%';
+        const pct = Math.round((score / QS.length) * 100);
+        const labels = [
+          'Keep going — every expert started here!',
+          'Good start — Zara can fill the gaps.',
+          'Solid — you know more than most teens.',
+          'Great work — you think like an investor.',
+          'Outstanding — almost ready to trade!',
+          'Perfect score — you belong on the leaderboard!'
+        ];
+        document.getElementById('rscore').textContent = `${score}/${QS.length}`;
+        document.getElementById('rlabel').textContent = labels[score] || labels[0];
+        document.getElementById('rc').textContent = score;
+        document.getElementById('rw').textContent = QS.length - score;
+        document.getElementById('rp').textContent = `${pct}%`;
+        document.getElementById('result').style.display = 'block';
+        
+        // Animate numbers (simple count-up)
+        animateNumber('rc', 0, score, 800);
+        animateNumber('rw', 0, QS.length - score, 800);
+        animateNumber('rp', 0, pct, 800);
+      }
+
+      function animateNumber(id, start, end, duration) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const value = Math.floor(progress * (end - start) + start);
+          el.textContent = id === 'rp' ? value + '%' : value;
+          if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+      }
+
+      // Start the quiz
+      init();
+    })();
+  </script>
 </body>
 </html>

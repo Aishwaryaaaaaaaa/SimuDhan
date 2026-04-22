@@ -4,13 +4,262 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FAQ — Simudhan</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="faq.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- COLORMIND PALETTE ---------- */
+    :root {
+      --bg-primary: #272E3A;
+      --bg-secondary: #1F2530;
+      --bg-tertiary: #2C3442;
+      --border-light: #3A4453;
+      --border-medium: #5B5968;
+      --text-primary: #D5DEE3;
+      --text-secondary: #7389A6;
+      --text-muted: #7F788E;
+      --accent: #7389A6;
+      --accent-glow: rgba(115, 137, 166, 0.25);
+      --green: #4ade80;
+      --red: #f87171;
+      --gradient-shimmer: linear-gradient(90deg, #7389A6, #7F788E, #5B5968, #7389A6);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ---------- CUSTOM CURSOR ---------- */
+    .cursor {
+      width: 24px; height: 24px;
+      border: 2px solid var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.15s ease, width 0.2s, height 0.2s, background 0.2s;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.2s;
+    }
+    .cursor.hover {
+      width: 54px; height: 54px;
+      background: rgba(213, 222, 227, 0.08);
+      border-color: var(--accent);
+      mix-blend-mode: normal;
+    }
+    .cursor-dot.hover { opacity: 0; }
+
+    /* ---------- PARTICLE BACKGROUND ---------- */
+    #particle-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: 
+        linear-gradient(rgba(213,222,227,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(213,222,227,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ---------- TOP BAR & NAV ---------- */
+    .top-bar {
+      height: 3px;
+      background: var(--gradient-shimmer);
+      background-size: 300% 100%;
+      animation: shimmer 4s linear infinite;
+      position: relative;
+      z-index: 100;
+    }
+    @keyframes shimmer { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 3rem;
+      border-bottom: 1px solid var(--border-light);
+      background: rgba(39, 46, 58, 0.8);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+    .nav-icon {
+      width: 28px; height: 28px; background: var(--text-primary);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-icon svg { width: 14px; height: 14px; fill: none; stroke: var(--bg-primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-secondary); cursor: pointer; align-items: center; }
+    .nav-links span { transition: color 0.2s, transform 0.2s; }
+    .nav-links span:hover { color: var(--text-primary); transform: translateY(-1px); }
+    .nav-links span.active { color: var(--text-primary); font-weight: 600; }
+    .nav-cta {
+      background: var(--text-primary); color: var(--bg-primary);
+      border: none; border-radius: 99px; padding: 9px 22px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .nav-cta:hover { background: var(--accent); color: white; transform: scale(1.02); }
+
+    /* ---------- PAGE HERO ---------- */
+    .page-hero {
+      position: relative; z-index: 2;
+      max-width: 720px; padding: 5rem 3rem 3rem;
+    }
+    .eyebrow {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .eyebrow-line {
+      width: 30px; height: 1px; background: var(--border-medium);
+    }
+    .eyebrow span {
+      font-size: 11px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    h1 {
+      font-size: 56px; font-weight: 800; line-height: 1.05;
+      letter-spacing: -3px; margin-bottom: 1rem;
+      color: var(--text-primary); text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .light { color: var(--text-muted); font-weight: 600; }
+    .subline {
+      font-size: 16px; color: var(--text-secondary);
+      line-height: 1.7; max-width: 460px;
+    }
+
+    /* ---------- FAQ CONTAINER ---------- */
+    .faq-wrap {
+      max-width: 760px; padding: 0 3rem 5rem;
+      position: relative; z-index: 2;
+    }
+    .faq-section { margin-bottom: 3rem; }
+    .faq-section-title {
+      font-size: 12px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 1.2rem; padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .faq-item {
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .faq-item:hover { background: rgba(115, 137, 166, 0.05); }
+    .faq-q {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px; font-size: 16px; font-weight: 600;
+      color: var(--text-primary);
+    }
+    .faq-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--bg-tertiary); border: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.2s;
+    }
+    .faq-icon svg {
+      width: 10px; height: 10px; fill: none;
+      stroke: var(--text-secondary); stroke-width: 2.5;
+      stroke-linecap: round; transition: transform 0.2s;
+    }
+    .faq-item.open .faq-icon {
+      background: var(--accent); border-color: var(--accent);
+    }
+    .faq-item.open .faq-icon svg {
+      stroke: white; transform: rotate(45deg);
+    }
+    .faq-a {
+      display: none; font-size: 14px; color: var(--text-secondary);
+      line-height: 1.7; margin-top: 1rem; max-width: 620px;
+      padding-right: 1rem;
+    }
+
+    /* CTA Block */
+    .faq-cta {
+      background: var(--bg-secondary); border: 1px solid var(--border-light);
+      border-radius: 16px; padding: 1.8rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem; flex-wrap: wrap; margin-top: 2rem;
+      backdrop-filter: blur(8px);
+    }
+    .cta-title {
+      font-size: 18px; font-weight: 700; margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+    .cta-sub {
+      font-size: 14px; color: var(--text-muted);
+    }
+    .faq-cta button {
+      background: var(--accent); color: white;
+      border: none; border-radius: 99px; padding: 12px 24px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: inherit; white-space: nowrap;
+      transition: all 0.2s; box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+    .faq-cta button:hover {
+      background: var(--text-primary); color: var(--bg-primary);
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer {
+      position: relative; z-index: 2; padding: 2rem 3rem;
+      border-top: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--text-muted);
+    }
+    footer strong { color: var(--text-secondary); }
+
+    /* Magnetic effect */
+    .magnetic { transition: transform 0.2s cubic-bezier(0.23,1,0.32,1); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      h1 { font-size: 42px; letter-spacing: -2px; }
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-hero { padding: 4rem 1.5rem 2rem; }
+      .faq-wrap { padding: 0 1.5rem 4rem; }
+      .faq-cta { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
 
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-dot"></div>
+
+  <!-- Particle Canvas -->
+  <canvas id="particle-canvas"></canvas>
+  <div class="grid-bg"></div>
+
+  <div class="top-bar"></div>
+
   <nav>
-    <div class="nav-logo" onclick="window.location='index.html'">
+    <div class="nav-logo magnetic" onclick="window.location='index.html'">
       <div class="nav-icon">
         <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
       </div>
@@ -23,20 +272,20 @@
       <span onclick="window.location='trade.html'">App</span>
       <span onclick="window.location='contact.html'">Reach Out</span>
     </div>
-    <button class="nav-cta" onclick="window.location='index.html'">Join waitlist</button>
+    <button class="nav-cta magnetic" onclick="window.location='index.html#waitlist'">Join waitlist</button>
   </nav>
 
-  <main>
+  <div class="page-hero">
     <div class="eyebrow">
       <div class="eyebrow-line"></div>
       <span>Got questions</span>
     </div>
     <h1>Everything you<br><span class="light">need to know.</span></h1>
     <p class="subline">Can't find what you're looking for? Ask Zara when we launch — she's pretty good at explaining things.</p>
-  </main>
+  </div>
 
   <div class="faq-wrap">
-
+    <!-- Pricing & access -->
     <div class="faq-section">
       <div class="faq-section-title">Pricing & access</div>
       <div class="faq-item" onclick="toggle(this)">
@@ -68,6 +317,7 @@
       </div>
     </div>
 
+    <!-- The data -->
     <div class="faq-section">
       <div class="faq-section-title">The data</div>
       <div class="faq-item" onclick="toggle(this)">
@@ -99,6 +349,7 @@
       </div>
     </div>
 
+    <!-- Who it's for -->
     <div class="faq-section">
       <div class="faq-section-title">Who it's for</div>
       <div class="faq-item" onclick="toggle(this)">
@@ -130,6 +381,7 @@
       </div>
     </div>
 
+    <!-- Privacy & safety -->
     <div class="faq-section">
       <div class="faq-section-title">Privacy & safety</div>
       <div class="faq-item" onclick="toggle(this)">
@@ -166,9 +418,8 @@
         <div class="cta-title">Still have questions?</div>
         <div class="cta-sub">Try a sample quiz or ask Zara directly when we launch.</div>
       </div>
-      <button onclick="window.location='quiz.html'">Try a sample quiz →</button>
+      <button class="magnetic" onclick="window.location='quiz.html'">Try a sample quiz →</button>
     </div>
-
   </div>
 
   <footer>
@@ -176,6 +427,118 @@
     <span>simudhan.trade · 2026</span>
   </footer>
 
-  <script src="faq.js"></script>
+  <script>
+    (function(){
+      "use strict";
+
+      // ---------- CUSTOM CURSOR & MAGNETIC ----------
+      const cursor = document.querySelector('.cursor');
+      const cursorDot = document.querySelector('.cursor-dot');
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+      });
+      const magnets = document.querySelectorAll('.magnetic');
+      magnets.forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursorDot.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); cursorDot.classList.remove('hover'); });
+      });
+
+      // ---------- PARTICLE NETWORK ----------
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+      const particleCount = 60;
+      const connectionDistance = 140;
+      let mouse = { x: null, y: null, radius: 100 };
+
+      function initCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            size: Math.random() * 2.2 + 1
+          });
+        }
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > width) p.vx *= -1;
+          if (p.y < 0 || p.y > height) p.vy *= -1;
+          if (mouse.x && mouse.y) {
+            let dx = p.x - mouse.x;
+            let dy = p.y - mouse.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < mouse.radius) {
+              let force = (mouse.radius - dist) / mouse.radius;
+              let angle = Math.atan2(dy, dx);
+              p.x += Math.cos(angle) * force * 5;
+              p.y += Math.sin(angle) * force * 5;
+            }
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+          ctx.fillStyle = '#7389A6';
+          ctx.shadowColor = '#7F788E';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+        });
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#5B5968';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i+1; j < particles.length; j++) {
+            let dx = particles[i].x - particles[j].x;
+            let dy = particles[i].y - particles[j].y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < connectionDistance) {
+              ctx.globalAlpha = 1 - dist/connectionDistance;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(drawParticles);
+      }
+
+      window.addEventListener('resize', initCanvas);
+      document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+      document.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+      initCanvas();
+      drawParticles();
+
+      // ---------- FAQ TOGGLE ----------
+      window.toggle = function(item) {
+        const isOpen = item.classList.contains('open');
+        // Close all others
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-a').style.display = 'none';
+        });
+        if (!isOpen) {
+          item.classList.add('open');
+          item.querySelector('.faq-a').style.display = 'block';
+        }
+      };
+
+    })();
+  </script>
 </body>
 </html>
